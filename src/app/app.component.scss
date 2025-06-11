@@ -1,0 +1,52 @@
+.main-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.blocked-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  .blocked-content {
+    text-align: center;
+    max-width: 90%;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+    
+    .blocked-image {
+      width: 150px; /* Ajusta este valor según tu logo */
+      height: auto;
+      margin-bottom: 2rem;
+      /* Removemos el filtro para mostrar color real */
+    }
+    
+    h1 {
+      color: #d32f2f; /* Rojo corporativo */
+      font-size: 2.2rem;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+    }
+    
+    p {
+      color: #5f6368; /* Gris oscuro para mejor legibilidad */
+      font-size: 1.2rem;
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
