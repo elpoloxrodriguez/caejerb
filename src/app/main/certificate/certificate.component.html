@@ -1,0 +1,177 @@
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-spinner"></div>
+  <p>Cargando información...</p>
+</div>
+
+<div *ngIf="showErrorCard" class="error-card">
+  <div class="error-header">
+    <h1>Error en la consulta</h1>
+  </div>
+
+  <div class="error-content">
+    <div class="error-icon">
+      <i class="fa fa-exclamation-triangle"></i>
+    </div>
+    <h2>No se pudo cargar la información</h2>
+    <p class="error-message">El <strong>HASH</strong> ha sido alterado y/o es invalido!</p>
+    <p>Por favor, verifique lo siguiente:</p>
+    <ul class="error-list">
+      <li>El enlace que utilizó es correcto?</li>
+      <li>Su conexión a internet está activa?</li>
+      <li>Intente nuevamente más tarde</li>
+    </ul>
+    <button class="retry-button" (click)="ngOnInit()">Reintentar</button>
+  </div>
+</div>
+
+<div *ngIf="!showErrorCard && !isLoading" class="military-id-card">
+  <!-- Aquí va todo tu HTML original de la tarjeta militar -->
+
+  <div class="header">
+    <h1>{{ militar.componente }}</h1>
+    <div class="logo-container">
+      <img [src]="escudo" alt="Logo" class="header-logo">
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="photo-container">
+      <div class="photo-placeholder">
+        <img [src]="militar.foto || './assets/images/ndisponible.webp'" alt="Imagen militar" class="imagen-militar"
+          onerror="this.src='./assets/images/ndisponible.webp'" noArrastrar>
+      </div>
+    </div>
+
+    <div class="data-container">
+      <h2 class="section-title" align="center"><strong>DATOS PERSONALES</strong></h2>
+
+      <div class="data-row">
+        <span class="label">GRADO O JQUIA:</span>
+        <span class="value">{{ militar.grado }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">APELLIDOS Y NOMBRES:</span>
+        <span class="value">{{ militar.nombre }} {{militar.apellido}}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">CÉDULA DE IDENTIDAD:</span>
+        <span class="value">{{ militar.cedula }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">UNIDAD SUPERIOR:</span>
+        <span class="value">{{ militar.unidadSuperior }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">UNIDAD DE ORIGEN:</span>
+        <span class="value">{{ militar.unidadOrigen }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">NÚMERO DE TELÉFONO PERSONAL:</span>
+        <span class="value">{{ militar.telefono }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">NÚMERO DE TELÉFONO DE EMERGENCIA:</span>
+        <span class="value">{{ militar.telefonoEmergencia }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">RELIGIÓN:</span>
+        <span class="value">{{ militar.religion }}</span>
+      </div>
+
+      <div class="data-row">
+        <span class="label">GRUPO SANGUÍNEO:</span>
+        <span class="value">{{ militar.grupoSanguineo }}</span>
+      </div>
+
+
+      <!-- Sección de Alergias -->
+      <div class="medical-card">
+        <div class="medical-header" (click)="toggleAccordion('alergias')">
+          <h3>ALÉRGIAS</h3>
+          <span class="toggle-icon">{{ isAccordionOpen('alergias') ? '−' : '+' }}</span>
+        </div>
+        <div class="medical-content" [class.open]="isAccordionOpen('alergias')">
+          <div *ngIf="militar.salud?.alergias?.length > 0; else noAlergias">
+            <div class="medical-item" *ngFor="let alergia of militar.salud.alergias">
+              <div class="medical-row">
+                <span class="medical-label">Nombre:</span>
+                <span class="medical-value">{{ alergia.nombre || 'No especificado' }}</span>
+              </div>
+              <div class="medical-row">
+                <span class="medical-label">Descripción:</span>
+                <span class="medical-value">{{ alergia.descripcion || 'No especificado' }}</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noAlergias>
+            <div class="no-data">No se han registrado alergias</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Sección de Tratamientos Médicos -->
+      <div class="medical-card">
+        <div class="medical-header" (click)="toggleAccordion('tratamientos')">
+          <h3>TRATAMIENTOS MÉDICOS</h3>
+          <span class="toggle-icon">{{ isAccordionOpen('tratamientos') ? '−' : '+' }}</span>
+        </div>
+        <div class="medical-content" [class.open]="isAccordionOpen('tratamientos')">
+          <div *ngIf="militar.salud?.tratamientos?.length > 0; else noTratamientos">
+            <div class="medical-item" *ngFor="let tratamiento of militar.salud.tratamientos">
+              <div class="medical-row">
+                <span class="medical-label">Nombre:</span>
+                <span class="medical-value">{{ tratamiento.nombre || 'No especificado' }}</span>
+              </div>
+              <div class="medical-row">
+                <span class="medical-label">Descripción:</span>
+                <span class="medical-value">{{ tratamiento.descripcion || 'No especificado' }}</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noTratamientos>
+            <div class="no-data">No se han registrado tratamientos médicos</div>
+          </ng-template>
+        </div>
+      </div>
+
+
+
+      <!-- Sección de Enfermedades -->
+      <div class="medical-card">
+        <div class="medical-header" (click)="toggleAccordion('enfermedades')">
+          <h3>ENFERMEDADES</h3>
+          <span class="toggle-icon">{{ isAccordionOpen('enfermedades') ? '−' : '+' }}</span>
+        </div>
+        <div class="medical-content" [class.open]="isAccordionOpen('enfermedades')">
+          <div *ngIf="militar.salud?.enfermedades?.length > 0; else noTratamientos">
+            <div class="medical-item" *ngFor="let enfermedades of militar.salud.enfermedades">
+              <div class="medical-row">
+                <span class="medical-label">Nombre:</span>
+                <span class="medical-value">{{ enfermedades.nombre || 'No especificado' }}</span>
+              </div>
+              <div class="medical-row">
+                <span class="medical-label">Descripción:</span>
+                <span class="medical-value">{{ enfermedades.descripcion || 'No especificado' }}</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noTratamientos>
+            <div class="no-data">No se han registrado enfermedades</div>
+          </ng-template>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>
+
+

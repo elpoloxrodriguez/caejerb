@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     // const currentUser = this._authenticationService.currentUserValue;
      const currentUser = 
      { 
-       role:this.token.Usuario[0].role
+       role:this.token.Usuario[0].rol
       }
       // console.log(currentUser)
 

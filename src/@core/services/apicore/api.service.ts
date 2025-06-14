@@ -87,9 +87,9 @@ export class ApiService {
 
 
   //Dirección Get para servicios en la página WEB
-  URL = environment.API;
-  RUTA = environment.Url;
-  hash = ':c521f27fb1b3311d686d511b668e5bd4'
+  URL = environment.api;
+  RUTA = environment.url;
+  hash = environment.hash;
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -162,8 +162,14 @@ export class ApiService {
    * @returns 
    */
   ExecColeccion(xObjeto): Observable<any> {
-    var url = "/v1/api/mcoleccion" + this.hash;
-    return this.http.post<any>(url, xObjeto, this.httpOptions);
+     let httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionStorage.getItem('recovery')
+    })
+  };
+    var url = "/v1/api/ccoleccion";
+    return this.http.post<any>(url, xObjeto, httpOptions);
   }
 
   //Ejecutar Api generales
@@ -177,6 +183,8 @@ export class ApiService {
     // }
     return this.http.post<any>(url, xAPI, this.httpOptions);
   }
+
+  
 
 
   //Ejecutar Api generales

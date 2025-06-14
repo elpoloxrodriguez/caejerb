@@ -1,11 +1,11 @@
 {
     "/v1/api/*": {
-        "target": "https://sirp.ipostel.gob.ve",
+        "target": "https://app.ejercito.mil.ve",
         "secure": false,
         "logLevel": "debug"
     },
     "/devel/api/*": {
-        "target": "https://sirp.ipostel.gob.ve",
+        "target": "https://app.ejercito.mil.ve",
         "secure": false,
         "logLevel": "debug"
     }

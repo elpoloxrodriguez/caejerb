@@ -5,7 +5,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { CoreConfigService } from '@core/services/config.service';
-import { IToken, LoginService } from '@core/services/seguridad/login.service';
 import Swal from 'sweetalert2';
 import { ApiService, IAPICore } from '@core/services/apicore/api.service';
 import { CoreMenuService } from '@core/components/core-menu/core-menu.service';
@@ -13,9 +12,10 @@ import { UtilService } from '@core/services/util/util.service';
 import jwt_decode from "jwt-decode";
 import { VERSION } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Auditoria, InterfaceService } from 'app/main/audit/auditoria.service';
 import { environment } from 'environments/environment';
 import { UpdateService } from 'app/auth/service';
+import { IToken, LoginService } from '@core/services/seguridad/login.service';
+import { Sha256Service } from '@core/services/login/sha256';
 
 @Component({
   selector: 'app-auth-login-v2',
@@ -34,13 +34,6 @@ export class AuthLoginV2Component implements OnInit {
   checkboxValue = false;
   checkboxControl = new FormControl(this.checkboxValue);
 
-  public xAuditoria: Auditoria = {
-    id: '',
-    usuario: '',
-    funcion: '',
-    metodo: '',
-    fecha: '',
-  }
 
   public xAPI: IAPICore = {
     funcion: '',
@@ -119,10 +112,15 @@ export class AuthLoginV2Component implements OnInit {
     private _router: Router,
     private utilservice: UtilService,
     private rutaActiva: ActivatedRoute,
-    private auditoria: InterfaceService
+    private sha256Service: Sha256Service,
   ) {
     this.token = undefined;
     this._unsubscribeAll = new Subject();
+
+    this.loginForm = this._formBuilder.group({
+      cedula: ['', [Validators.required]],
+      clave: ['', Validators.required]
+    });
 
     // Configure the layout
     this._coreConfigService.config = {
@@ -175,6 +173,19 @@ export class AuthLoginV2Component implements OnInit {
     }, 200);
   }
 
+
+  iniciar() {
+    this.submitted = true;
+    
+    if (this.loginForm.invalid) {
+      return;
+    }
+    
+    this.loading = true;
+    // Your login logic here
+    this.login()
+  }
+
   // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
 
@@ -195,10 +206,7 @@ export class AuthLoginV2Component implements OnInit {
       this._router.navigate(['/home'])
       return
     }
-    this.loginForm = this._formBuilder.group({
-      email: ['', [Validators.required]],
-      password: ['', Validators.required]
-    });
+
 
     // get return url from route parameters or default to '/'
     this.returnUrl = this._route.snapshot.queryParams['returnUrl'] || '/';
@@ -219,103 +227,40 @@ export class AuthLoginV2Component implements OnInit {
   }
 
 
-  public send(form: NgForm): void {
-    if (this.production === true) {
-      if (form.invalid) {
-        for (const control of Object.keys(form.controls)) {
-          form.controls[control].markAsTouched();
-        }
-        return;
-      }
-      if (form.invalid != true) {
-        this.login()
-      }
-    } else {
-      this.login()
-    }
-  }
 
-
-  login() {
+  async login() {
     this.submitted = true;
     this.loading = true;
-    const md5 = new Md5();
-    const password = md5.appendStr(this.clave).end()
-    // var Xapi = {
-    //   "funcion": 'IPOSTEL_R_Login',
-    //   "parametros": this.usuario + ',' + password
-    // }
-    if (this.checkboxValue == false) {
-      this.xAPI.funcion = "IPOSTEL_R_LoginOperador"
-      this.xAPI.parametros = this.usuario + ',' + password
-      this.xAPI.valores = ''
-      // alert('Eres Operador') 
-    } else {
-      // alert('Eres subcontratista')
-      this.xAPI.funcion = "IPOSTEL_R_LoginSubcontratista"
-      this.xAPI.parametros = this.usuario + ',' + password
-      this.xAPI.valores = ''
-    }
-    this.loginService.getLoginExternas(this.xAPI).subscribe(
-      (data) => {
-        const stoken = jwt_decode(data.token)
-        this.sessionTOKEN = stoken
-        const tokenSession = this.sessionTOKEN.Usuario[0].status_empresa
-        switch (tokenSession) {
-          case 0:
-            this.utilservice.alertConfirmMini('error', '<strong><font color="red">Oops lo sentimos!</font></strong> <br> Estimado usuario su cuenta aun no se encuentra validada por <strong><font color="red">IPOSTEL</font></strong>, porfavor intente de nuevo mas tarde.');
-            this.loading = false;
-            this._router.navigate(['login'])
-            break;
-          case 1:
-            this.itk = data;
-            sessionStorage.setItem("token", this.itk.token);
-            this.infoUsuario = jwt_decode(sessionStorage.getItem('token'));
-            // AUDITORIA //
-            this.tokenA = jwt_decode(sessionStorage.getItem('token'))
-            this.xAuditoria.id = this.utilservice.GenerarUnicId()
-            this.xAuditoria.usuario = this.tokenA.Usuario[0]
-            this.xAuditoria.funcion = this.xAPI.funcion
-            this.xAuditoria.parametro = this.xAPI.parametros
-            this.xAuditoria.metodo = 'Entrando al Sistema'
-            this.xAuditoria.fecha = Date()
-            // AUDITORIA //
 
-            this.utilservice.alertConfirmMini('success', `Bienvenido al IPOSTEL`);
-            // INICIO AGREGAR AUDITORIA //
-            this.auditoria.InsertarInformacionAuditoria(this.xAuditoria)
-            // FIN AGREGAR AUDITORIA //
 
-            this._router.navigate(['']).then(() => { window.location.reload() });
-            break;
-          case 2:
-            this.utilservice.alertConfirmMini('error', '<strong><font color="red">Oops lo sentimos!</font></strong> <br> Estimado usuario su cuenta Deshabilitada por <strong><font color="red">REVOCATORIA</font></strong>, porfavor pongase en contacto con la administración de IPOSTEL.');
-            this.loading = false;
-            this._router.navigate(['login'])
-            break;
-          case 3:
-            this.utilservice.alertConfirmMini('error', '<strong><font color="red">Oops lo sentimos!</font></strong> <br> Estimado usuario su cuenta Deshabilitada por <strong><font color="red">FINIQUITO DE CONTRATO</font></strong>, porfavor pongase en contacto con la administración de IPOSTEL.');
-            this.loading = false;
-            this._router.navigate(['login'])
-            break;
-          case 4:
-            this.utilservice.alertConfirmMini('error', '<strong><font color="red">Oops lo sentimos!</font></strong> <br> Estimado usuario su cuenta Deshabilitada por <strong><font color="red">NO MOVILIZACIÓN DE PIEZAS</font></strong>, porfavor pongase en contacto con la administración de IPOSTEL.');
-            this.loading = false;
-            this._router.navigate(['login'])
-            break;
-          default:
-            break;
-        }
-      },
-      (error) => {
-        this.loading = false;
-        this._router.navigate(['login'])
-        this.utilservice.alertConfirmMini('error', 'Usuario y/o Contraseña Incorrectos, Verifique e Intente Nuevamente')
-        this.usuario = ''
-        this.clave = ''
-      }
-    );
+    this.sha256Service.hash(this.loginForm.value.clave).then(hash => {
+        this.loginForm.value.clave = hash;
+      });
+
+  
+      // this.xAPI.funcion = environment.xApi.INICIAR_SESION
+      // // this.xAPI.parametros = `${this.loginForm.value.cedula},${this.loginForm.value.clave}`
+      // this.xAPI.parametros = '17818665,d313b8573a00998d9a87cc7e6eafca8039874286da851603cba60a23f7ee83e8'
+      // this.xAPI.valores = ''
+    //  await this.loginService(this.loginForm.value.cedula).subscribe(
+    //   (data) => {
+    //     console.log(data)
+    //     const stoken = jwt_decode(data.token)
+    //     this.sessionTOKEN = stoken
+    //     console.log(this.sessionTOKEN)
+    //     sessionStorage.setItem("token", data.token);
+    //     this._router.navigate(['home'])
+    //   },
+    //   (error) => {
+    //     this.loading = false;
+    //     this._router.navigate(['login'])
+    //     this.utilservice.alertConfirmMini('error', 'Usuario y/o Contraseña Incorrectos, Verifique e Intente Nuevamente')
+    //     this.usuario = ''
+    //     this.clave = ''
+    //   }
+    // );
   }
+
 
 
   /**

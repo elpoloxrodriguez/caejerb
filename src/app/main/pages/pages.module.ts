@@ -11,10 +11,12 @@ import { CoreCommonModule } from '@core/common.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { CertificateComponent } from '../certificate/certificate.component';
 
 
 @NgModule({
   declarations: [
+    CertificateComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     FormsModule,
     ReactiveFormsModule,
     AuthenticationModule,
-    MiscellaneousModule,
+    MiscellaneousModule
   ],
 
 })

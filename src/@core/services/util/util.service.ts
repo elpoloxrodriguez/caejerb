@@ -2,18 +2,46 @@ import { Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
 import {Md5} from 'ts-md5/dist/md5';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilService {
 
+   private fechaNacimiento: Date | string;
+   private cedula: string
 
   //
   constructor(
   ) {
 
   }
+
+// ENCRYPTAR EN BASE64+ROT13+SHA256
+  encodeString(input: string): string {
+    // Paso 1: Codificar a Base64
+    const base64 = btoa(unescape(encodeURIComponent(input)));
+    
+    // Paso 2: Aplicar ROT13
+    const rot13 = this.applyRot13(base64);
+    
+    // Paso 3: Codificar a SHA256
+    const sha256 = CryptoJS.SHA256(rot13).toString(CryptoJS.enc.Hex);
+    
+    return sha256;
+  }
+
+  private applyRot13(str: string): string {
+    return str.replace(/[a-zA-Z]/g, function(c) {
+      const charCode = c.charCodeAt(0);
+      const shift = charCode <= 90 ? 65 : 97;
+      return String.fromCharCode((charCode - shift + 13) % 26 + shift);
+    });
+  }
+
+
+  
 
    FechaFormato(texto){
     return texto.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
@@ -89,6 +117,9 @@ export class UtilService {
     return result;
   }
 
+
+
+
   ConvertirMoneda(moneda: any) {
     const formatter = new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'VEF' }).format(moneda)
     return formatter
@@ -157,6 +188,135 @@ export class UtilService {
         console.log('I was closed by the timer')
       }
     })
+  }
+
+
+    /**
+   * Calcula el tiempo de servicio y suma el tiempo reconocido
+   * @param {Date|string} fechaActual - Fecha de referencia
+   * @param {Date|string} fechaIngreso - Fecha de ingreso
+   * @param {Object} tiempoReconocido - Objeto con anios, meses y días reconocidos
+   * @returns {Object} Objeto con tiempo total calculado y tiempo de servicio formateado
+   */
+  calcularTiempoServicioCompleto(fechaActual, fechaIngreso, tiempoReconocido = { anios: 0, meses: 0, dias: 0 }) {
+    // 1. Calcular tiempo de servicio base (sin tiempo reconocido)
+    const tiempoBase = this.calcularTiempoServicio(fechaActual, fechaIngreso);
+
+    // 2. Sumar el tiempo reconocido (siguiendo la lógica de Go)
+    let { anios, meses, dias } = this.sumarTiempoReconocido(tiempoBase, tiempoReconocido);
+
+    // 3. Formatear el resultado como en Go
+    const tiempoServicioFormateado = `${anios}A ${meses}M ${dias}D`;
+
+    return {
+      tiempoTotal: { anios, meses, dias },
+      tiempoBase,
+      tiempoReconocido,
+      tiempoServicioFormateado
+    };
+  }
+
+
+    setFechaNacimiento(fecha: Date | string): void {
+    this.fechaNacimiento = fecha
+  }
+
+
+    setCedula(cedula: string): void {
+    this.cedula = cedula
+  }
+
+    /**
+  * Suma el tiempo reconocido al tiempo base (lógica adaptada de Go)
+  */
+  sumarTiempoReconocido(tiempoBase, { anios: ar, meses: mr, dias: dr }) {
+    let { anios, meses, dias } = tiempoBase;
+
+    // Sumar anios reconocidos
+    anios += ar;
+
+    // Sumar meses reconocidos con ajustes
+    if (dr > 29) {
+      dias += dr - 30;
+      meses++;
+    } else {
+      dias += dr;
+    }
+
+    if (mr > 11) {
+      meses += mr - 12;
+      anios++;
+    } else {
+      meses += mr;
+    }
+
+    // Ajustes finales (como en Go)
+    if (ar > 0 || mr > 0 || dr > 0) {
+      if (dias > 29) {
+        dias -= 30;
+        meses++;
+      }
+      if (meses > 11) {
+        meses -= 12;
+        anios++;
+      }
+    }
+
+    return { anios, meses, dias };
+  }
+
+
+    normalizarFechaUTC(fecha: string | Date): Date {
+    if (!fecha) return new Date(NaN);
+
+    // Si es string con offset de zona horaria
+    if (typeof fecha === 'string' && /[-+]\d{2}:\d{2}$/.test(fecha)) {
+      // Convertir a UTC eliminando el offset
+      const dateObj = new Date(fecha);
+      const utcDate = new Date(dateObj.getTime() + (dateObj.getTimezoneOffset() * 60000));
+      return utcDate;
+    }
+
+    // Si ya es Date o string ISO sin zona horaria
+    return new Date(fecha);
+  }
+
+
+    // Función original mejorada (para usar como base)
+  calcularTiempoServicio(fechaActual, fechaIngreso) {
+    let fechaActualUTC = this.normalizarFechaUTC(fechaActual)
+    let fechaIngresoUTC = this.normalizarFechaUTC(fechaIngreso)
+
+
+    if (isNaN(fechaActualUTC.getTime()) || isNaN(fechaIngresoUTC.getTime())) {
+      throw new Error('Fechas inválidas');
+    }
+
+    if (fechaIngresoUTC > fechaActualUTC) {
+      [fechaActualUTC, fechaIngresoUTC] = [fechaIngresoUTC, fechaActualUTC];
+    }
+
+    let anios = fechaActualUTC.getUTCFullYear() - fechaIngresoUTC.getUTCFullYear();
+    let meses = fechaActualUTC.getUTCMonth() - fechaIngresoUTC.getUTCMonth();
+    let dias = fechaActualUTC.getUTCDate() - fechaIngresoUTC.getUTCDate();
+
+    if (dias < 0) {
+      const ultimoDiaMesAnterior = new Date(Date.UTC(
+        fechaActualUTC.getUTCFullYear(),
+        fechaActualUTC.getUTCMonth(),
+        0
+      )).getUTCDate();
+
+      dias = ultimoDiaMesAnterior - fechaIngresoUTC.getUTCDate() + fechaActualUTC.getUTCDate();
+      meses--;
+    }
+
+    if (meses < 0) {
+      meses += 12;
+      anios--;
+    }
+
+    return { anios, meses, dias };
   }
 
   AlertMini(position:any,icon:any,title:any,timer:number){

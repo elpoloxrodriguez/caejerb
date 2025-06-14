@@ -18,14 +18,14 @@ import { MiscellaneousModule } from '../pages/miscellaneous/miscellaneous.module
 import { BlockUIModule } from 'ng-block-ui';
 
 import { DashboardComponent } from './principal/dashboard.component';
-import { AuditModule } from '../audit/audit.module';
+import { SharedModule } from '../shared/shared.module';
 
 
 
 
 @NgModule({
   declarations: [
-    DashboardComponent,  
+    DashboardComponent,
   ],
   imports: [
     CommonModule,
@@ -41,7 +41,7 @@ import { AuditModule } from '../audit/audit.module';
     FormsModule,
     ReactiveFormsModule,
     MiscellaneousModule,
-    AuditModule,
+    SharedModule
   ],
   exports: [],
   providers: [DatePipe]

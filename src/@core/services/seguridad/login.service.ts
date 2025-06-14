@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import { ApiService } from '../apicore/api.service';
 import { UtilService } from '../util/util.service';
 import jwt_decode from "jwt-decode";
-import { Auditoria, InterfaceService } from 'app/main/audit/auditoria.service';
 
 export interface IUsuario {
   nombre: string,
@@ -38,18 +37,10 @@ export interface UClave {
 
 export class LoginService {
 
-  public xAuditoria: Auditoria = {
-    id: '',
-    usuario: '',
-    ip: '',
-    mac: '',
-    metodo: '',
-    fecha: '',
-  }
 
-  public URL: string = environment.API
+  public URL: string = environment.api
 
-  public RUTA: string = environment.Url
+  public RUTA: string = environment.url
 
   public Id: string = ''
 
@@ -67,11 +58,10 @@ export class LoginService {
     private router: Router,
     private http: HttpClient,
     private utilservice: UtilService,
-    private auditoria: InterfaceService,
     private apiService: ApiService
 
   ) {
-    this.Id = environment.ID
+    this.Id = environment.id
     if (sessionStorage.getItem("token") != undefined) this.SToken = sessionStorage.getItem("token");
   }
 
@@ -92,7 +82,8 @@ export class LoginService {
     return this.http.post<IToken>(url, usuario)
   }
 
-  getLoginExternas(parametro: any): Observable<IToken> {
+    getLoginExternas(parametro: any): Observable<IToken> {
+      console.log(parametro)
     if (environment.production === true) {
       var url = this.URL + 'wusuario/access'
     } else {
@@ -129,16 +120,6 @@ export class LoginService {
         //   'Te esperamos',
         //   'success'
         // )
-
-        // INICIO AGREGAR AUDITORIA //
-        this.token = jwt_decode(sessionStorage.getItem('token'));
-        this.xAuditoria.id = this.utilservice.GenerarUnicId()
-        this.xAuditoria.usuario = this.token.Usuario[0]
-        this.xAuditoria.funcion = 'IPOSTEL_R_Desconexion'
-        this.xAuditoria.metodo = 'Salio del Sistema'
-        this.xAuditoria.fecha = Date()
-        this.auditoria.InsertarInformacionAuditoria(this.xAuditoria)
-        // FIN AGREGAR AUDITORIA //
 
 
         this.router.navigate(['/login']).then(() => { window.location.reload() });

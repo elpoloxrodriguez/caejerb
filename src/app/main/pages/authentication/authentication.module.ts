@@ -25,6 +25,8 @@ import { AuthResetPasswordV2Component } from './auth-reset-password-v2/auth-rese
 import { AuthForgotPasswordV2Component } from './auth-forgot-password-v2/auth-forgot-password-v2.component';
 import { BlockUIModule } from 'ng-block-ui';
 import { FooterComponent } from './footer/footer.component';
+import { CertificateComponent } from 'app/main/certificate/certificate.component';
+import { RegisterComponent } from './register/register.component';
 
 
 
@@ -37,12 +39,16 @@ const routes: Routes = [
   },
   {
     path: 'certificate/:id',
-    component: AuthLoginV2Component,
+    component: CertificateComponent,
     // canActivate: [AuthGuard,AuthGuardGuard],
   },
   {
     path: '',
     component: AuthLoginV2Component,
+  },
+    {
+    path: 'register',
+    component: RegisterComponent,
   },
   {
     path: 'reset-password/:id',
@@ -61,6 +67,7 @@ const routes: Routes = [
     AuthResetPasswordV2Component,
     AuthForgotPasswordV2Component,
     FooterComponent,
+    RegisterComponent,
   ],
   imports: [
     CommonModule,

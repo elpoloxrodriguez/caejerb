@@ -91,6 +91,7 @@ const appRoutes: Routes = [
     //  Recaptcha V3
     RecaptchaV3Module,
     SharedModule,
+    
     // App modules
     LayoutModule,
     DashboardModule,

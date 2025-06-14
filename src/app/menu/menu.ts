@@ -8,19 +8,55 @@ export const menu: CoreMenu[] = [
     id: 'dashboard/home',
     nombre: 'Principal',
     icono: 'home',
-    role: [1],
+    // role: [1],
     type: 'item',
     url: 'home',
   },
 
-  // AUDITORIA
+
   {
-    id: 'audit',
-    nombre: 'Auditoria',
-    role: [3, 4],
-    icono: 'database',
+    id: 'phone',
+    nombre: 'Telefonos',
+    // role: [1],
+    icono: 'phone-call',
     type: 'item',
-    url: 'audit/audit',
+    url: 'user/phone',
+  },
+
+    {
+    id: 'religion',
+    nombre: 'Religion',
+    // role: [1],
+    icono: 'user-plus',
+    type: 'item',
+    url: 'user/religion',
+  },
+
+      {
+    id: 'blood-type',
+    nombre: 'Grupo Sanguineo',
+    // role: [1],
+    icono: 'droplet',
+    type: 'item',
+    url: 'user/blood-type',
+  },
+
+      {
+    id: 'allergies',
+    nombre: 'Alergias',
+    // role: [1],
+    icono: 'alert-triangle',
+    type: 'item',
+    url: 'user/allergies',
+  },
+
+      {
+    id: 'medical-history',
+    nombre: 'Historial Medico',
+    // role: [1],
+    icono: 'plus-square',
+    type: 'item',
+    url: 'user/medical-history',
   },
 
 

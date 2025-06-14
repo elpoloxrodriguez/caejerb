@@ -1,0 +1,176 @@
+<div class="card content-wrapper container-xxl p-0" *blockUI="'section-block'">
+  <div class="card-body">
+
+    <section class="users-list-wrapper">
+
+      <div class="card">
+        <div class="row">
+          <div class="col-md-3 col-12">
+            <div class="d-flex justify-content-between align-items-center m-1">
+              <label class="d-flex align-items-center">Mostrar
+                <select class="form-control mx-25" [(ngModel)]="selectedOption">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                Registros</label>
+            </div>
+          </div>
+          <div class="col-md-3 col-12">
+            <div class="d-flex justify-content-between align-items-center m-1">
+              <button (click)="ModalAgregar(ModalPhone)" class="btn btn-success">Agregar Telefono</button>
+            </div>
+          </div>
+          <div class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end">
+            <div class="d-flex align-items-center justify-content-end pr-1 pb-1 pb-md-0">
+              <label class="d-flex align-items-center ml-1 ml-md-0">Buscar:<input [(ngModel)]="searchValue"
+                  name="searchValue" type="search" class="form-control ml-25" placeholder="Numero de Telefono"
+                  (keyup)="filterUpdate($event)" (search)="filterUpdate($event)" /></label>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="isLoading == 0">
+          <div class="loading-overlay">
+            <div class="spinner-border text-success" role="status"></div>
+            <div class="loading-message">Cargando datos, por favor espere...</div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="isLoading == 2">
+          <div class="loading-overlay">
+            <div class="spinner-border text-danger" role="status"></div>
+            <div class="loading-message">No hay registros...</div>
+          </div>
+        </ng-container>
+
+        <ngx-datatable [rows]="rows" [rowHeight]="58" class="bootstrap core-bootstrap" [limit]="10"
+          [columnMode]="ColumnMode.force" [headerHeight]="40" [footerHeight]="50" [limit]="basicSelectedOption"
+          [scrollbarH]="true">
+
+
+          <ngx-datatable-column name="Telefono" prop="phone" [width]="100">
+            <ng-template let-phone="value" ngx-datatable-cell-template>
+              <div>
+                <span class="font-weight-bold"> {{ phone }}</span>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Tipo" prop="type" [width]="200">
+            <ng-template let-type="value" ngx-datatable-cell-template>
+              <div *ngIf="type === 1" class="badge badge-pill badge-light-warning">
+                {{ getTypeName(type) }}
+              </div>
+              <div *ngIf="type === 2" class="badge badge-pill badge-light-primary">
+                {{ getTypeName(type) }}
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="STATUS" prop="status" [width]="100">
+            <ng-template let-status="value" ngx-datatable-cell-template>
+              <div *ngIf="status === 1" class="badge badge-pill" ngClass="badge-light-success">
+                Activo
+              </div>
+              <div *ngIf="status === 0" class="badge badge-pill" ngClass="badge-light-danger">
+                Inactivo
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+
+
+          <ngx-datatable-column name="Accion" [width]="10" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <div ngbDropdown container="body">
+                <button ngbDropdownToggle type="button" class="btn icon-btn btn-sm hide-arrow" rippleEffect>
+                  <span [data-feather]="'settings'" [class]="'cursor-pointer'"></span>
+                </button>
+                <div ngbDropdownMenu>
+
+                  <a (click)="ModalActualizar(ModalPhone,row)" ngbDropdownItem><span [size]="16" [data-feather]="'edit'"
+                      [class]="'mr-50'"></span>Modificar</a>
+
+                  <a (click)="Eliminar(row)" ngbDropdownItem><span [size]="16" [data-feather]="'trash'"
+                      [class]="'mr-50'"></span>Eliminar</a>
+
+
+                </div>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+
+        </ngx-datatable>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+
+
+
+<ng-template #ModalPhone let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="myModalLabel160">{{ title_modal }}</h5>
+  </div>
+  <div class="modal-body" tabindex="0" ngbAutofocus>
+    <div class="col-xl-12 col-md-12 col-12">
+      <!-- Header Starts -->
+      <form>
+        <div class="row d-flex align-items-end">
+
+
+          <div class="col-md-6 col-12">
+            <div class="form-group">
+              <label>Numero de Telefono</label>
+              <input type="text" class="form-control" autocomplete="off" [(ngModel)]="IPhone.phone"
+                [ngModelOptions]="{standalone: true}" placeholder="Ingrese numero de telefono" />
+            </div>
+          </div>
+
+
+
+          <div class="col-md-6 col-12">
+            <div class="form-group">
+              <label >Tipo de Telefono</label>
+              <ng-select [items]="typePhone" [(ngModel)]="IPhone.type" name="statusOptions" bindLabel="name"
+                bindValue="id" placeholder="Seleccionar Tipo"></ng-select>
+            </div>
+          </div>
+
+
+
+
+
+          <div class="col-md-6 col-12">
+            <div class="form-group">
+              <label >Estatus</label>
+              <ng-select [items]="statusOptions" [(ngModel)]="IPhone.status" name="statusOptions" bindLabel="name"
+                bindValue="id" placeholder="Seleccionar Status"></ng-select>
+            </div>
+          </div>
+
+
+
+        </div>
+      </form>
+    </div>
+    <!-- Header Starts -->
+    <!-- </div> -->
+    <!-- Header Ends -->
+  </div>
+  <!--/ Invoice -->
+  <div class="modal-footer">
+
+    <button type="submit" (click)="Actualizar()" *ngIf="!showAddButton" rippleEffect
+      class="btn btn-warning mr-1">Actualizar Telefono</button>
+    <button type="submit" (click)="Agregar()" *ngIf="showAddButton" rippleEffect class="btn btn-success mr-1">Agregar
+      Telefono</button>
+
+    <button type="button" class="btn btn-danger" (click)="modal.close('Accept click')" rippleEffect>
+      Cerrar
+    </button>
+  </div>
+</ng-template>
