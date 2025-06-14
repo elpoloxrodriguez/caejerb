@@ -84,7 +84,7 @@ export class FooterComponent implements OnInit {
     </div>
     <p style="margin: 0; color: #212529; line-height: 1.5;">
         De no realizar los pasos recomendados, <strong>el sistema impedirá el inicio de sesión</strong> como medida de seguridad, 
-        ya que la versión desactualizada puede generar <strong>errores críticos en los registros enviados a IPOSTEL</strong>, 
+        ya que la versión desactualizada puede generar <strong>errores críticos en los registros enviados</strong>, 
         comprometiendo la integridad de los datos.
     </p>
 </div>
