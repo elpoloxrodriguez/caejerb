@@ -62,12 +62,12 @@
 
       <div class="data-row">
         <span class="label">UNIDAD SUPERIOR:</span>
-        <span class="value">{{ militar.unidadSuperior }}</span>
+        <span class="value">{{ militar.unidadsuperior }}</span>
       </div>
 
       <div class="data-row">
         <span class="label">UNIDAD DE ORIGEN:</span>
-        <span class="value">{{ militar.unidadOrigen }}</span>
+        <span class="value">{{ militar.unidadorigen }}</span>
       </div>
 
       <div class="data-row">
@@ -150,7 +150,7 @@
           <span class="toggle-icon">{{ isAccordionOpen('enfermedades') ? '−' : '+' }}</span>
         </div>
         <div class="medical-content" [class.open]="isAccordionOpen('enfermedades')">
-          <div *ngIf="militar.salud?.enfermedades?.length > 0; else noTratamientos">
+          <div *ngIf="militar.salud?.enfermedades?.length > 0; else noEnfermedades">
             <div class="medical-item" *ngFor="let enfermedades of militar.salud.enfermedades">
               <div class="medical-row">
                 <span class="medical-label">Nombre:</span>
@@ -162,7 +162,7 @@
               </div>
             </div>
           </div>
-          <ng-template #noTratamientos>
+          <ng-template #noEnfermedades>
             <div class="no-data">No se han registrado enfermedades</div>
           </ng-template>
         </div>

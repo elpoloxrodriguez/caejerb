@@ -94,6 +94,8 @@ export interface MilitaryData {
   numerohistoria: string;
   persona: Persona;
   situacion: string;
+  unidadsuperior:string,
+  unidadorigen:string
 }
 
 @Injectable({
@@ -213,6 +215,7 @@ export class MilitaryService {
         telefono: {} as Telefono,
         salud: {} as Salud,
         religion: ''
+
       };
     }
 
@@ -244,7 +247,9 @@ export class MilitaryService {
       id: data.id || '',
       numerohistoria: data.numerohistoria || '',
       persona: 'persona' in data ? this.mapPersona(data.persona) : {} as Persona,
-      situacion: data.situacion || ''
+      situacion: data.situacion || '',
+      unidadorigen: data.unidadorigen || '',
+      unidadsuperior: data.unidadsuperior || ''
     };
   }
 

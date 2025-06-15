@@ -32,7 +32,7 @@ export class FooterComponent implements OnInit {
   async ngOnInit() {
     sessionStorage.removeItem('version')
     sessionStorage.setItem('version', environment.buildDateTime)
-    await this.getBuildDateTime();
+    // await this.getBuildDateTime();
     this.currentDate = new Date();
     this.fechafinal = environment.buildDateTime
     this.fechaX = 'Build: ' + this.utilservice.FechaMoment(environment.buildDateTime)
@@ -42,7 +42,7 @@ export class FooterComponent implements OnInit {
   }
 
   async getBuildDateTime() {
-    const url = 'https://raw.githubusercontent.com/elpoloxrodriguez/sirpvenV3/main/src/environments/environment.prod.ts';
+    const url = 'https://github.com/elpoloxrodriguez/caejerb/blob/main/src/environments/environment.prod.ts';
 
     await this.http.get(url, { responseType: 'text' }).subscribe(
       (data: string) => {
