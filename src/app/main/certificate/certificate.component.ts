@@ -212,7 +212,7 @@ async consultarHashMilitar(hash: string) {
               // this.componente = this.rowMilitar.componente.descripcion
               this.escudo = './assets/images/componentes/AV.webp';
               break;
-            case 'GNB':
+            case 'GN':
               // this.componente = this.rowMilitar.componente.descripcion
               this.escudo = './assets/images/componentes/GN.webp';
               break;

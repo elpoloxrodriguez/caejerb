@@ -277,22 +277,5 @@ export class AppComponent implements OnInit, OnDestroy {
     this._coreSidebarService.getSidebarRegistry(key).toggleOpen();
   }
 
-
-
-  //  Recaptcha V3
-  public send(form: NgForm): void {
-    if (form.invalid) {
-      for (const control of Object.keys(form.controls)) {
-        form.controls[control].markAsTouched();
-      }
-      return;
-    }
-    this.recaptchaV3Service.execute('importantAction')
-    .subscribe((token: string) => {
-      console.debug(`Token [${token}] generated`);
-    });
-  }
-
-
   
 }
