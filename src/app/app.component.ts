@@ -20,7 +20,7 @@ import { locale as es } from 'app/menu/i18n/es';
 import { LoginService } from '@core/services/seguridad/login.service';
 import jwt_decode from "jwt-decode";
 
-import { ReCaptchaV3Service } from 'ng-recaptcha';
+// import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { NgForm } from '@angular/forms';
 
 import { environment } from '../environments/environment';
@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private overlayElement: HTMLElement;
 
   constructor(
-    private recaptchaV3Service: ReCaptchaV3Service,
+    // private recaptchaV3Service: ReCaptchaV3Service,
     private loginService: LoginService,
     @Inject(DOCUMENT) private document: any,
     private _title: Title,
