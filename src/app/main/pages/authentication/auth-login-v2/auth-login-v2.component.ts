@@ -227,39 +227,38 @@ export class AuthLoginV2Component implements OnInit {
   }
 
 
-
   async login() {
     this.submitted = true;
     this.loading = true;
 
+  try {
+    // First hash the password
+    const hashedPassword = await this.sha256Service.hash(this.loginForm.value.clave);
+    
+    // Update the form value with the hashed password
+    this.loginForm.value.clave = hashedPassword;
 
-    this.sha256Service.hash(this.loginForm.value.clave).then(hash => {
-        this.loginForm.value.clave = hash;
-      });
+    // Set up the API call
+    this.xAPI.funcion = environment.xApi.INICIAR_SESION;
+    this.xAPI.parametros = `${this.loginForm.value.cedula},${hashedPassword}`;
+    this.xAPI.valores = '';
 
-  
-      // this.xAPI.funcion = environment.xApi.INICIAR_SESION
-      // // this.xAPI.parametros = `${this.loginForm.value.cedula},${this.loginForm.value.clave}`
-      // this.xAPI.parametros = '17818665,d313b8573a00998d9a87cc7e6eafca8039874286da851603cba60a23f7ee83e8'
-      // this.xAPI.valores = ''
-    //  await this.loginService(this.loginForm.value.cedula).subscribe(
-    //   (data) => {
-    //     console.log(data)
-    //     const stoken = jwt_decode(data.token)
-    //     this.sessionTOKEN = stoken
-    //     console.log(this.sessionTOKEN)
-    //     sessionStorage.setItem("token", data.token);
-    //     this._router.navigate(['home'])
-    //   },
-    //   (error) => {
-    //     this.loading = false;
-    //     this._router.navigate(['login'])
-    //     this.utilservice.alertConfirmMini('error', 'Usuario y/o Contraseña Incorrectos, Verifique e Intente Nuevamente')
-    //     this.usuario = ''
-    //     this.clave = ''
-    //   }
-    // );
+    // Make the API call
+    const data = await this.loginService.getLoginExternas(this.xAPI).toPromise();
+    
+    console.log(data);
+    const stoken = jwt_decode(data.token);
+    this.sessionTOKEN = stoken;
+    sessionStorage.setItem("token", data.token);
+    this._router.navigate(['home'], { replaceUrl: true });
+  } catch (error) {
+    this.loading = false;
+    this._router.navigate(['login']);
+    this.utilservice.alertConfirmMini('error', 'Usuario y/o Contraseña Incorrectos, Verifique e Intente Nuevamente');
+    this.usuario = '';
+    this.clave = '';
   }
+}
 
 
 

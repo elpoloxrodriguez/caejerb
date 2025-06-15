@@ -16,7 +16,7 @@ export const environment = {
     recaptcha: {
     siteKey: '6LdwJNwlAAAAAI8-p7XKKCtfJ51goRFyBBbjaAJL', // LOCALHOST Y SIRPVEN V2
   },
-  buildDateTime: 'Sun Jun 15 2025 10:30:16 GMT-0400 (Venezuela Time)',
+  buildDateTime: 'Sun Jun 15 2025 16:25:36 GMT-0400 (Venezuela Time)',
   devel: '/devel/api/',
   fnx: '/v1/api/fnx',
   coleccion: '/v1/api/ccoleccion',
@@ -27,6 +27,7 @@ export const environment = {
   rutaQR: {
     'ipsfa': btoa('https://apps.ipsfa.gob.ve/app/#/certificado'),
     'ejercito': btoa('https://app.ejercito.mil.ve/#/certificado'),
+    'pim_ejercito': btoa('https://pim.ejercito.mil.ve/#/certificate')
   },
   serviciosExtra: false,
   driver: {
@@ -35,13 +36,14 @@ export const environment = {
   },
   colecciones: {
     WUSUARIO : 'wusuario',
-    MILITAR: 'militar'
+    MILITAR: 'militar',
+    ANALITICOS: 'analiticos'
   },
   
   xApi: {
     REGISTAR_USUARIO: 'PIM_C_REGISTRAR_USUARIO',
     INICIAR_SESION: 'PIM_R_INICIAR_SESION',
-
+    INICIOSESION_ADMIN: 'PIM_PG_R_INICIOSESION_ADMIN',
     OBTENERMILITAR: 'PIM_R_OBTENERMILITAR',
     CONSULTARHASH: 'PIM_R_CONSULTARHASH',
 

@@ -313,7 +313,7 @@ export class ApiService {
     // console.log(rut)
     // console.log(id+' '+atob(ruta))
     // return this.http.get<any>(this.URL + 'genqr/' + id+'/'+ruta, this.httpOptions)
-    return this.http.get<any>('/v1/api/genqr/' + id + '/' + ruta, this.httpOptions)
+    return this.http.get<any>('/v1/api/genqr-libre/' + id + '/' + ruta, this.httpOptions)
   }
 
   LoadQR(id: string): Observable<any> {

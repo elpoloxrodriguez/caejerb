@@ -118,8 +118,6 @@ export class UtilService {
   }
 
 
-
-
   ConvertirMoneda(moneda: any) {
     const formatter = new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'VEF' }).format(moneda)
     return formatter
