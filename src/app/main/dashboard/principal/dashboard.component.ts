@@ -74,7 +74,7 @@ export class DashboardComponent implements OnInit {
   }
 
   async GenerarPIMQR(){
-          const id = 'b826c8797a3eedfc6c30a4d5abac1eb5c16880b6cc08608d0067c640e5df25e9';
+          const id = 'd334536d4b97bd692332f1be522a0648066bddf45aa2d27bd114ea0585f3b6c3';
           let ruta: string = environment.rutaQR.pim_ejercito;
          await this._apiService.GenQR(id, ruta).subscribe(
             (data) => {
@@ -88,7 +88,7 @@ export class DashboardComponent implements OnInit {
 
 
   async DescargarQR(){
-    await this._apiService.LoadQR('b826c8797a3eedfc6c30a4d5abac1eb5c16880b6cc08608d0067c640e5df25e9').subscribe(
+    await this._apiService.LoadQR('033cb52760a6f3e5971439f44cb287d77368e42346528f7a5edc99210d7649a3').subscribe(
                 async (data) => {
                   this.imageBase64 = data.contenido
                   await this.downloadImage(this.imageBase64)

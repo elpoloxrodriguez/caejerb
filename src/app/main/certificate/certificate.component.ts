@@ -556,6 +556,12 @@ export class CertificateComponent implements OnInit {
               break;
           }
 
+            if (cedula == '5892464') {
+            this.militar.foto = './assets/images/presidente.jpg';
+            this.militar.componente = 'Comandante en Jefe de la Fuerza Armada Nacional Bolivariana';
+            this.escudo = './assets/images/fanb.png';
+          }
+
           resolve(response);
         },
         error: (err) => {
