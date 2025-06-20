@@ -7,10 +7,11 @@ import { CoreConfigService } from '@core/services/config.service';
 import { IAPICore, ApiService } from '@core/services/apicore/api.service';
 import { UtilService } from '@core/services/util/util.service';
 import { environment } from 'environments/environment';
-import { MilitaryService } from 'app/main/services/military.service';
+import { MilitaryData, MilitaryService } from 'app/main/services/military.service';
 import { LoginService, Usuario } from 'app/main/services/login.service';
 import { Sha256Service } from '@core/services/login/sha256';
 import { hash } from 'crypto';
+import { MilitaryUpdateService } from 'app/main/services/military-update-service';
 
 
 
@@ -43,7 +44,20 @@ export class RegisterComponent implements OnInit, OnDestroy {
   public passwordTextType: boolean;
 
 
-  public militarData: any
+  public militarData: MilitaryData = {
+    cedula: '',
+    categoria: '',
+    clase: '',
+    codigocomponente: '',
+    componente: undefined,
+    grado: undefined,
+    id: '',
+    numerohistoria: '',
+    persona: undefined,
+    situacion: '',
+    unidadsuperior: '',
+    unidadorigen: ''
+  }
 
   // Form fields
 
@@ -59,11 +73,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _route: ActivatedRoute,
     private _router: Router,
-    private sha256Service : Sha256Service,
+    private sha256Service: Sha256Service,
     private loginService: LoginService,
     private utilservice: UtilService,
     private apiService: ApiService,
     private militaryService: MilitaryService,
+    private militaryUpdateService: MilitaryUpdateService
   ) {
     this._unsubscribeAll = new Subject();
 
@@ -162,7 +177,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   async validarMilitar() {
     this.loginForm.value.hash = this.utilservice.encodeString(this.loginForm.value.cedula)
     await this.militaryService.validarMilitar(this.loginForm.value.cedula).then(data => {
-      this.militarData = data
+      this.militarData = data as MilitaryData
       this.sha256Service.hash(this.loginForm.value.clave).then(hash => {
         this.loginForm.value.clave = hash;
         this.crearUsuario(this.loginForm.value);
@@ -173,6 +188,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   async crearUsuario(Mil: any) {
+    this.militarData.cedula = Mil.cedula;
     let obj = {
       coleccion: environment.colecciones.WUSUARIO,
       objeto: Mil,
@@ -184,9 +200,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     await this.apiService.ExecColeccion(obj).subscribe({
       next: (response) => {
         this.limpiar()
-        this.crearMilitar(this.militarData)
+        this.CreateMilitary(this.militarData)
         this.loading = false
-        this.utilservice.AlertMini('top-end', 'success', 'Felicidades! Usuario Creado Exitosamente', 3000)
       },
       error: (e) => {
         console.log(e)
@@ -194,24 +209,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  crearMilitar(Militar: any) {
-    let obj = {
-      coleccion: environment.colecciones.MILITAR,
-      objeto: Militar,
-      donde: `{\"cedula\":\"${Militar.id}\"}`,
-      driver: environment.driver.PIMQR,
-      upsert: true,
-    };
-
-    this.apiService.ExecColeccion(obj).subscribe({
-      next: (response) => {
-        console.log(response)
-      },
-      error: (e) => {
-        console.log(e)
-      },
-    });
+  CreateMilitary(military: any) {
+    console.log('Creando militar:', military);
+    this.militaryUpdateService.createMilitaryData(military)
+      .then(response => {
+        this.utilservice.AlertMini('top-end', 'success', 'Felicidades! Usuario Creado Exitosamente', 3000)
+        console.log('Registro exitoso:', response);
+      })
+      .catch(error => {
+        this.utilservice.AlertMini('top-end', 'error', 'Ooops! Algo salio mal, intente nuevamente', 3000)
+        console.error('Error en registrarse:', error);
+      });
   }
 
 
@@ -221,8 +229,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
       email: '',
       telefono: '',
       clave: '',
-      hash:'',
-      rol:1
+      hash: '',
+      rol: 1
     });
   }
 

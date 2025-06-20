@@ -1,7 +1,32 @@
-@import '@core/scss/base/plugins/charts/chart-apex.scss';
-@import '@core/scss/angular/libs/toastr.component.scss';
+/* Estilo para los tabs */
+.nav-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 5px; /* Espacio para el scroll */
+}
 
+/* Ocultar scrollbar pero mantener funcionalidad */
+.nav-tabs::-webkit-scrollbar {
+  display: none;
+}
 
-.datos-generales {
-    background-color: red;
+/* Estilo para cada item del tab */
+.nav-tabs .nav-item {
+  flex: 0 0 auto;
+}
+
+/* Estilo responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+  .nav-tabs .nav-link {
+    padding: 0.5rem;
+    font-size: 0.85rem;
   }
+  
+  .nav-tabs [data-feather] {
+    width: 14px;
+    height: 14px;
+  }
+}

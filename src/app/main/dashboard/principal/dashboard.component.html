@@ -1,23 +1,378 @@
 <div class="content-wrapper container-xxl p-0" *blockUI="'section-block'">
   <div class="content-body">
-
     <div class="row match-height">
       <!-- Medal Card -->
       <div class="col-xl-12 col-md-6 col-12">
         <div class="card card-statistics">
           <div class="card-header">
-            <h4 class="card-title">{{ title }}</h4>
+            <!-- <h4 class="card-title text-center">Bienvenido</h4> -->
             <div class="d-flex align-items-center">
             </div>
           </div>
 
-          <button (click)="DescargarQR()">Descargar</button>
-   
+          <div class="card-body">
+            <div class="d-flex justify-content-center">
+               <div class="w-100" style="max-width: 100%; overflow-x: auto;">
+                 <ul ngbNav #navWithIcons="ngbNav" class="nav-tabs" [ngClass]="{'flex-nowrap': true}">
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink>
+                      <span [data-feather]="'mail'"></span> 
+                       <span class="d-none d-md-inline"> Correo</span>   
+                    </a>
+                    <ng-template ngbNavContent>
 
+                      <form [formGroup]="correoForm" (ngSubmit)="updateMilitaryEmail()" class="py-3">
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="emailPrincipal" class="form-label">Correo Principal</label>
+                            <input type="email" class="form-control" id="emailPrincipal"
+                              formControlName="emailPrincipal" placeholder="ejemplo@dominio.com">
+                            <div *ngIf="correoForm.get('emailPrincipal')?.invalid && 
+                   (correoForm.get('emailPrincipal')?.dirty || correoForm.get('emailPrincipal')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="correoForm.get('emailPrincipal')?.errors?.['required']">
+                                El correo principal es obligatorio
+                              </small>
+                              <small *ngIf="correoForm.get('emailPrincipal')?.errors?.['email']">
+                                Ingrese un correo electrónico válido
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="emailSecundario" class="form-label">Correo Alternativo</label>
+                            <input type="email" class="form-control" id="emailSecundario"
+                              formControlName="emailSecundario" placeholder="alternativo@dominio.com">
+                            <div *ngIf="correoForm.get('emailSecundario')?.invalid && 
+                   (correoForm.get('emailSecundario')?.dirty || correoForm.get('emailSecundario')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="correoForm.get('emailSecundario')?.errors?.['email']">
+                                Ingrese un correo electrónico válido
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mb-4">
+                          <div class="col-md-12">
+                            <label for="emailNotificaciones" class="form-label">Correo Institucional</label>
+                            <input type="email" class="form-control" id="emailNotificaciones"
+                              formControlName="emailInstitucional" placeholder="institucional@dominio.com">
+                            <div *ngIf="correoForm.get('emailInstitucional')?.invalid && 
+                   (correoForm.get('emailInstitucional')?.dirty || correoForm.get('emailInstitucional')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="correoForm.get('emailInstitucional')?.errors?.['required']">
+                                El correo institucional es obligatorio
+                              </small>
+                              <small *ngIf="correoForm.get('emailInstitucional')?.errors?.['email']">
+                                Ingrese un correo electrónico válido
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary" [disabled]="correoForm.invalid">
+                            <i class="fa fa-save me-1"></i> Actualizar
+                          </button>
+                        </div>
+                      </form>
+
+                    </ng-template>
+                  </li>
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink><span [data-feather]="'phone'"></span> 
+                     <span class="d-none d-md-inline"> Telefono</span> 
+                    </a>
+                    <ng-template ngbNavContent>
+                      <form [formGroup]="telefonoForm" (ngSubmit)="updateMilitaryPhone()" class="py-3">
+                        <!-- Campo Teléfono Móvil -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="movil" class="form-label">Teléfono Móvil</label>
+                            <input type="tel" class="form-control" id="movil" formControlName="movil"
+                              placeholder="Ej: (0400)-000-0000" (input)="formatearTelefono('movil')">
+                            <div *ngIf="telefonoForm.get('movil')?.invalid && 
+                   (telefonoForm.get('movil')?.dirty || telefonoForm.get('movil')?.touched)" class="text-danger mt-1">
+                              <small *ngIf="telefonoForm.get('movil')?.errors?.['required']">
+                                El teléfono móvil es obligatorio
+                              </small>
+                              <small *ngIf="telefonoForm.get('movil')?.errors?.['pattern']">
+                                Formato: (0400)-000-0000
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Campo Teléfono Emergencia -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="emergencia" class="form-label">Teléfono de Emergencia</label>
+                            <input type="tel" class="form-control" id="emergencia" formControlName="emergencia"
+                              placeholder="Ej: (0400)-000-0000" (input)="formatearTelefono('emergencia')">
+                            <div *ngIf="telefonoForm.get('emergencia')?.invalid && 
+                   (telefonoForm.get('emergencia')?.dirty || telefonoForm.get('emergencia')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="telefonoForm.get('emergencia')?.errors?.['required']">
+                                El teléfono de emergencia es obligatorio
+                              </small>
+                              <small *ngIf="telefonoForm.get('emergencia')?.errors?.['pattern']">
+                                Formato: (0400)-000-0000
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Campo Teléfono Domiciliario -->
+                        <div class="row mb-4">
+                          <div class="col-md-12">
+                            <label for="domiciliario" class="form-label">Teléfono Domiciliario</label>
+                            <input type="tel" class="form-control" id="domiciliario" formControlName="domiciliario"
+                              placeholder="Ej: (0200)-000-0000" (input)="formatearTelefono('domiciliario')">
+                            <div *ngIf="telefonoForm.get('domiciliario')?.invalid && 
+                   (telefonoForm.get('domiciliario')?.dirty || telefonoForm.get('domiciliario')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="telefonoForm.get('domiciliario')?.errors?.['pattern']">
+                                Formato: (0200)-000-0000
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary" [disabled]="telefonoForm.invalid">
+                            <i class="fa fa-save me-1"></i> Actualizar
+                          </button>
+                        </div>
+                      </form>
+                    </ng-template>
+                  </li>
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink><span [data-feather]="'eye'"></span> 
+                       <span class="d-none d-md-inline">Datos Fisonómico</span> 
+                    </a>
+                    <ng-template ngbNavContent>
+                      <form [formGroup]="fisionomiaForm" (ngSubmit)="actualizarDatosFisionomicos()" class="py-3">
+                        <!-- Grupo Sanguíneo -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="grupoSanguineo" class="form-label">Grupo Sanguíneo</label>
+                            <input class="form-control" formControlName="gruposanguineo" />
+                          </div>
+                        </div>
+
+                        <!-- Señas Particulares -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="senaparticular" class="form-label">Señas Particulares</label>
+                            <input type="text" class="form-control" id="senaparticular" formControlName="senaparticular"
+                              placeholder="Ej: Cicatriz en la ceja izquierda">
+                          </div>
+                        </div>
+
+                        <!-- Color de Cabello -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="colorCabello" class="form-label">Color de Cabello</label>
+                            <input class="form-control" formControlName="colorcabello" />
+                          </div>
+                        </div>
+
+                        <!-- Color de Ojos -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="colorojos" class="form-label">Color de Ojos</label>
+                            <input class="form-control" formControlName="colorojos">
+                          </div>
+                        </div>
+
+                        <!-- Color de Piel -->
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="colorpiel" class="form-label">Color de Piel</label>
+                            <input class="form-control" formControlName="colorpiel">
+                          </div>
+                        </div>
+
+                        <!-- Estatura -->
+                        <div class="row mb-4">
+                          <div class="col-md-12">
+                            <label for="estatura" class="form-label">Estatura (metros)</label>
+                            <input type="number" class="form-control" id="estatura" formControlName="estatura"
+                              step="0.01" min="1.20" max="2.50" placeholder="Ej: 1.75">
+                            <small class="text-muted">Ingrese la estatura en metros (ej. 1.75)</small>
+                          </div>
+                        </div>
+
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save me-1"></i> Actualizar
+                          </button>
+                        </div>
+                      </form>
+                    </ng-template>
+                  </li>
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink><span [data-feather]="'user'"></span> 
+                      <span class="d-none d-md-inline">Datos Personales</span> 
+                    </a>
+                    <ng-template ngbNavContent>
+
+                    </ng-template>
+                  </li>
+                  <!-- Tab Alergias -->
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink><span [data-feather]="'alert-triangle'"></span> 
+                       <span class="d-none d-md-inline">Alergias</span> 
+                    </a>
+                    <ng-template ngbNavContent>
+                      <div class="py-3">
+                        <div class="d-flex justify-content-between mb-3">
+                          <h5>Registro de Alergias</h5>
+                          <button class="btn btn-primary btn-sm" (click)="abrirModalAlergia()">
+                            <i class="fas fa-plus me-1"></i> Agregar
+                          </button>
+                        </div>
+
+                        <div class="table-responsive">
+                          <table datatable [dtOptions]="dtOptionsAlergias" class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Tipo</th>
+                                <th>Gravedad</th>
+                                <th>Acciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let alergia of alergias">
+                                <td>{{ alergia.nombre }}</td>
+                                <td>{{ alergia.descripcion }}</td>
+                                <td>{{ alergia.tipo }}</td>
+                                <td>
+                                  <span class="badge" [ngClass]="{
+                  'bg-success': alergia.gravedad === 'LEVE',
+                  'bg-warning': alergia.gravedad === 'MODERADA',
+                  'bg-danger': alergia.gravedad === 'GRAVE'
+                }">
+                                    {{ alergia.gravedad }}
+                                  </span>
+                                </td>
+                                <td>
+                                  <button class="btn btn-sm btn-icon" (click)="editarAlergia(alergia)">
+                                    <i class="fas fa-edit"></i>
+                                  </button>
+                                  <button class="btn btn-sm btn-icon text-danger" (click)="eliminarAlergia(alergia.id)">
+                                    <i class="fas fa-trash"></i>
+                                  </button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </li>
+                  <!-- Tab Enfermedades -->
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink><span [data-feather]="'heart'"></span>
+                                           <span class="d-none d-md-inline">Enfermedades</span> 
+                    </a>
+                    <ng-template ngbNavContent>
+                      <div class="py-3">
+                        <div class="d-flex justify-content-between mb-3">
+                          <h5>Registro de Enfermedades</h5>
+                          <button class="btn btn-primary btn-sm" (click)="abrirModalEnfermedad()">
+                            <i class="fas fa-plus me-1"></i> Agregar
+                          </button>
+                        </div>
+
+                        <div class="table-responsive">
+                          <table datatable [dtOptions]="dtOptionsEnfermedades" class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Fecha Diagnóstico</th>
+                                <th>Acciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let enfermedad of enfermedades">
+                                <td>{{ enfermedad.nombre }}</td>
+                                <td>{{ enfermedad.descripcion }}</td>
+                                <td>{{ enfermedad.fechaDiagnostico | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                  <button class="btn btn-sm btn-icon" (click)="editarEnfermedad(enfermedad)">
+                                    <i class="fas fa-edit"></i>
+                                  </button>
+                                  <button class="btn btn-sm btn-icon text-danger"
+                                    (click)="eliminarEnfermedad(enfermedad.id)">
+                                    <i class="fas fa-trash"></i>
+                                  </button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </li>
+
+                  <!-- Tab Tratamientos Médicos -->
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink><span [data-feather]="'activity'"></span>
+                                           <span class="d-none d-md-inline">Tramamientos Medicos</span> 
+</a>
+                    <ng-template ngbNavContent>
+                      <div class="py-3">
+                        <div class="d-flex justify-content-between mb-3">
+                          <h5>Registro de Tratamientos</h5>
+                          <button class="btn btn-primary btn-sm" (click)="abrirModalTratamiento()">
+                            <i class="fas fa-plus me-1"></i> Agregar
+                          </button>
+                        </div>
+
+                        <div class="table-responsive">
+                          <table datatable [dtOptions]="dtOptionsTratamientos" class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Acciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let tratamiento of tratamientos">
+                                <td>{{ tratamiento.nombre }}</td>
+                                <td>{{ tratamiento.descripcion }}</td>
+                                <td>{{ tratamiento.fechaInicio | date:'dd/MM/yyyy' }}</td>
+                                <td>{{ tratamiento.fechaFin | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                  <button class="btn btn-sm btn-icon" (click)="editarTratamiento(tratamiento)">
+                                    <i class="fas fa-edit"></i>
+                                  </button>
+                                  <button class="btn btn-sm btn-icon text-danger"
+                                    (click)="eliminarTratamiento(tratamiento.id)">
+                                    <i class="fas fa-trash"></i>
+                                  </button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </li>
+                </ul>
+                <div [ngbNavOutlet]="navWithIcons" class="mt-2"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
     </div>
-
   </div>
 </div>

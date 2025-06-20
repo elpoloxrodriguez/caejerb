@@ -4,6 +4,7 @@ import { UtilService } from '@core/services/util/util.service';
 import { environment } from 'environments/environment';
 
 
+
 export interface Correo {
   alternativo: string;
   institucional: string;
@@ -85,6 +86,8 @@ export interface Persona {
 }
 
 export interface MilitaryData {
+  [x: string]: any;
+  cedula: string;
   categoria: string;
   clase: string;
   codigocomponente: string;
@@ -97,6 +100,35 @@ export interface MilitaryData {
   unidadsuperior:string,
   unidadorigen:string
 }
+
+
+// Interface para actualizaciones parciales
+export interface MilitaryDataUpdate {
+  categoria?: string;
+  cedula: string;
+  clase?: string;
+  codigocomponente?: string;
+  componente?: Partial<Componente>;
+  grado?: Partial<Grado>;
+  numerohistoria?: string;
+  persona?: {
+    correo?: Partial<Correo>;
+    datobasico?: Partial<DatoBasico>;
+    datofisico?: Partial<DatoFisico>;
+    datofisionomico?: Partial<DatoFisionomico>;
+    telefono?: Partial<Telefono>;
+    religion?: string;
+    salud?: {
+      alergias?: Alergias[];
+      enfermedades?: Enfermedades[];
+      tratamientos?: Tratamientos[];
+    };
+  };
+  situacion?: string;
+  unidadorigen?: string;
+  unidadsuperior?: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -239,6 +271,7 @@ export class MilitaryService {
     }
 
     return {
+      cedula: data.cedula || 0,
       categoria: data.categoria || '',
       clase: data.clase || '',
       codigocomponente: data.codigocomponente || '',
