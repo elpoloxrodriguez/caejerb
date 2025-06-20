@@ -19,7 +19,6 @@ export class MilitaryUpdateService {
 
   constructor(
     private loginService: LoginService,
-    private apiService: ApiService,
     private utilservice: UtilService,
     private _apiService: ApiCoreService
   ) {
@@ -51,7 +50,7 @@ export class MilitaryUpdateService {
       // 3. Fusionar cambios con datos existentes
       const updatedData = this.mergeUpdates(currentData, updates);
       // 4. Enviar actualización
-      return await this.crearMilitar(updatedData);
+      return this.crearMilitar(updatedData);
     } catch (error) {
       console.error('Error en updateMilitaryData:', error);
       throw error;
@@ -59,7 +58,7 @@ export class MilitaryUpdateService {
   }
 
 
-    async createMilitaryData(military:any): Promise<any> {
+  async createMilitaryData(military:any): Promise<any> {
     console.log('Creando datos militares para:');
     try {
       // 1. Validar conexión
@@ -74,14 +73,14 @@ export class MilitaryUpdateService {
 
 
 
-  private validarConexion(): Promise<void> {
-    return new Promise((resolve, reject) => {
+  public validarConexion(): Promise<void> {
+    return new Promise(async (resolve, reject) => {
       const dt: Usuario = {
         nombre: 'loginQR',
         clave: '1234',
       };
       
-      this.loginService.getLoginRecovery(dt).subscribe({
+      await this.loginService.getLoginRecovery(dt).subscribe({
         next: (data) => {
           sessionStorage.setItem("recovery", data.token);
           resolve();
@@ -98,8 +97,8 @@ export class MilitaryUpdateService {
     this.xAPI.funcion = environment.xApi.OBTENERMILITAR;
     this.xAPI.parametros = `${cedula}`;
 
-    return new Promise((resolve, reject) => {
-      this._apiService.Ejecutar(this.xAPI).subscribe({
+    return new Promise( (resolve, reject) => {
+       this._apiService.Ejecutar(this.xAPI).subscribe({
         next: (response: any) => {
           if (!response || !response[0]) {
             reject('La API respondió con null/undefined');

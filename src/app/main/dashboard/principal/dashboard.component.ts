@@ -7,6 +7,8 @@ import { MilitaryData, MilitaryDataUpdate } from 'app/main/services/military.ser
 import { MilitaryUpdateService } from 'app/main/services/military-update-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UtilService } from '@core/services/util/util.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Alergia, Enfermedad, Tratamiento } from 'app/main/services/militar.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,10 +25,32 @@ export class DashboardComponent implements OnInit {
     valores: {},
   };
 
-  correoForm: FormGroup;
-  telefonoForm: FormGroup;
-  fisionomiaForm: FormGroup;
+  public title_modal: string;
+
+  public alergias: Alergia[] = [];
+  public enfermedades: Enfermedad[] = [];
+  public tratamientos: Tratamiento[] = [];
+
+  public correoForm: FormGroup;
+  public telefonoForm: FormGroup;
+  public fisionomiaForm: FormGroup;
+  public datoPersonalesForm: FormGroup;
+  public alergiasForm: FormGroup;
+  public enfermedadesForm: FormGroup;
+  public tratamientoForm: FormGroup;
   private phonePattern = /^\(\d{4}\)-\d{3}-\d{4}$/;
+
+  public showAddButton: boolean = false;
+
+  public loading: boolean = false;
+  public totalRecords: number = 0;
+
+
+  public loadingE: boolean = false;
+  public totalRecordsE: number = 0;
+
+  public loadingT: boolean = false;
+  public totalRecordsT: number = 0;
 
   public title: string;
   public token;
@@ -37,7 +61,8 @@ export class DashboardComponent implements OnInit {
     private _apiService: ApiService,
     private militaryUpdateService: MilitaryUpdateService,
     private fb: FormBuilder,
-    private utilservice: UtilService
+    private utilservice: UtilService,
+    private modalService: NgbModal,
   ) { }
 
   async ngOnInit() {
@@ -52,11 +77,35 @@ export class DashboardComponent implements OnInit {
       emailInstitucional: ['', Validators.email]
     });
 
+    this.datoPersonalesForm = this.fb.group({
+      unidadsuperior: ['', [Validators.required,]],
+      unidadorigen: ['', [Validators.required,]],
+      religion: ['', [Validators.required,]]
+    });
+
     this.telefonoForm = this.fb.group({
       movil: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
       emergencia: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
       domiciliario: ['', [Validators.pattern(this.phonePattern)]]
     });
+
+    this.alergiasForm = this.fb.group({
+      nombre: ['', Validators.required],
+      descripcion: ['', Validators.required]
+    });
+
+    this.enfermedadesForm = this.fb.group({
+      nombre: ['', Validators.required],
+      descripcion: ['', Validators.required]
+    });
+
+    this.tratamientoForm = this.fb.group({
+      nombre: ['', Validators.required],
+      descripcion: ['', Validators.required]
+    });
+    
+
+
 
     this.fisionomiaForm = this.fb.group({
       gruposanguineo: ['', Validators.required],
@@ -67,8 +116,7 @@ export class DashboardComponent implements OnInit {
       estatura: [null, [Validators.required, Validators.min(1.20), Validators.max(2.50)]]
     });
 
-
-    await this.getMilitaryData(); // Llamamos al método para obtener los datos del militar
+    this.getMilitaryData(); // Llamamos al método para obtener los datos del militar
 
   }
 
@@ -106,6 +154,28 @@ export class DashboardComponent implements OnInit {
           colorpiel: this.militarData.persona.datofisionomico.colorpiel || '',
           estatura: this.militarData.persona.datofisionomico.estatura || null
         });
+        this.datoPersonalesForm.patchValue({
+          unidadsuperior: this.militarData.unidadsuperior || '',
+          unidadorigen: this.militarData.unidadorigen || '',
+          religion: this.militarData.persona.religion || ''
+        });
+
+        this.loading = true
+        this.alergias = this.militarData.persona.salud.alergias || [];
+        this.totalRecords = this.alergias.length;
+        this.loading = false
+
+        this.loadingE = true
+        this.enfermedades = this.militarData.persona.salud.enfermedades || [];
+        this.totalRecordsE = this.enfermedades.length;
+        this.loadingE = false
+
+
+        this.loadingT = true
+        this.tratamientos = this.militarData.persona.salud.tratamientos || [];
+        this.totalRecordsT = this.tratamientos.length;
+        this.loadingT = false
+
       })
       .catch(error => {
         console.error('Error al consultar datos del militar:', error);
@@ -113,6 +183,93 @@ export class DashboardComponent implements OnInit {
 
   }
 
+
+  agregarAlergias() {
+    const add = {
+      cedula: this.token.Usuario[0].cedula,
+      persona: {
+        salud: {
+          alergias: [
+            {
+              nombre: this.alergiasForm.get('nombre').value,
+              descripcion: this.alergiasForm.get('descripcion').value
+            }
+          ]
+        }
+      }
+    };
+
+    this.militaryUpdateService.updateMilitaryData(this.token.Usuario[0].cedula, add)
+      .then(async response => {
+        await this.getMilitaryData();
+        this.modalService.dismissAll();
+        this.alergiasForm.reset();
+        console.log('Actualización exitosa:', response);
+        this.utilservice.AlertMini('top-end', 'success', 'Alergia Agregada!', 3000);
+      })
+      .catch(error => {
+        console.error('Error en actualización:', error);
+        this.utilservice.AlertMini('top-end', 'error', 'Oops! Lo sentimos, ocurrio un error', 3000);
+      });
+  }
+
+  agregarEnfermedades() {
+    const add = {
+      cedula: this.token.Usuario[0].cedula,
+      persona: {
+        salud: {
+          enfermedades: [
+            {
+              nombre: this.enfermedadesForm.get('nombre').value,
+              descripcion: this.enfermedadesForm.get('descripcion').value
+            }
+          ]
+        }
+      }
+    };
+
+    this.militaryUpdateService.updateMilitaryData(this.token.Usuario[0].cedula, add)
+      .then(async response => {
+        await this.getMilitaryData();
+        this.modalService.dismissAll();
+        this.enfermedadesForm.reset();
+        console.log('Actualización exitosa:', response);
+        this.utilservice.AlertMini('top-end', 'success', 'Enfermedad Agregada!', 3000);
+      })
+      .catch(error => {
+        console.error('Error en actualización:', error);
+        this.utilservice.AlertMini('top-end', 'error', 'Oops! Lo sentimos, ocurrio un error', 3000);
+      });
+  }
+
+  agregarTratamiento() {
+    const add = {
+      cedula: this.token.Usuario[0].cedula,
+      persona: {
+        salud: {
+          tratamientos: [
+            {
+              nombre: this.tratamientoForm.get('nombre').value,
+              descripcion: this.tratamientoForm.get('descripcion').value
+            }
+          ]
+        }
+      }
+    };
+
+    this.militaryUpdateService.updateMilitaryData(this.token.Usuario[0].cedula, add)
+      .then(async response => {
+        await this.getMilitaryData();
+        this.modalService.dismissAll();
+        this.tratamientoForm.reset();
+        console.log('Actualización exitosa:', response);
+        this.utilservice.AlertMini('top-end', 'success', 'Tratamiento Agregado!', 3000);
+      })
+      .catch(error => {
+        console.error('Error en actualización:', error);
+        this.utilservice.AlertMini('top-end', 'error', 'Oops! Lo sentimos, ocurrio un error', 3000);
+      });
+  }
 
   updateMilitaryEmail() {
     const updates = {
@@ -130,7 +287,7 @@ export class DashboardComponent implements OnInit {
       .then(async response => {
         await this.getMilitaryData();
         console.log('Actualización exitosa:', response);
-        this.utilservice.AlertMini('top-end', 'success', 'Datos Actualizados!', 3000);
+        this.utilservice.AlertMini('top-end', 'success', 'Correos Actualizados!', 3000);
       })
       .catch(error => {
         console.error('Error en actualización:', error);
@@ -171,32 +328,110 @@ export class DashboardComponent implements OnInit {
   }
 
   actualizarDatosFisionomicos() {
-  if (this.fisionomiaForm.valid) {
-    const datos = {
+    if (this.fisionomiaForm.valid) {
+      const datos = {
+        cedula: this.token.Usuario[0].cedula,
+        persona: {
+          datofisionomico: {
+            gruposanguineo: this.fisionomiaForm.value.gruposanguineo,
+            senaparticular: this.fisionomiaForm.value.senaparticular || 'NINGUNA',
+            colorcabello: this.fisionomiaForm.value.colorcabello,
+            colorojos: this.fisionomiaForm.value.colorojos,
+            colorpiel: this.fisionomiaForm.value.colorpiel,
+            estatura: parseFloat(this.fisionomiaForm.value.estatura)
+          }
+        }
+      };
+
+      this.militaryUpdateService.updateMilitaryData(this.token.Usuario[0].cedula, datos)
+        .then(async response => {
+          await this.getMilitaryData();
+          this.utilservice.AlertMini('top-end', 'success', 'Datos fisonómicos actualizados!', 3000);
+        })
+        .catch(error => {
+          console.error('Error actualizando datos fisonómicos:', error);
+          this.utilservice.AlertMini('top-end', 'error', 'Error al actualizar datos', 3000);
+        });
+    }
+  }
+
+  actualizarDatosPersonales() {
+    const updates = {
       cedula: this.token.Usuario[0].cedula,
       persona: {
-        datofisionomico: {
-          gruposanguineo: this.fisionomiaForm.value.gruposanguineo,
-          senaparticular: this.fisionomiaForm.value.senaparticular || 'NINGUNA',
-          colorcabello: this.fisionomiaForm.value.colorcabello,
-          colorojos: this.fisionomiaForm.value.colorojos,
-          colorpiel: this.fisionomiaForm.value.colorpiel,
-          estatura: parseFloat(this.fisionomiaForm.value.estatura)
-        }
-      }
+        religion: this.datoPersonalesForm.get('religion').value,
+      },
+      unidadsuperior: this.datoPersonalesForm.get('unidadsuperior').value,
+      unidadorigen: this.datoPersonalesForm.get('unidadorigen').value
     };
 
-    this.militaryUpdateService.updateMilitaryData(this.token.Usuario[0].cedula, datos)
+    this.militaryUpdateService.updateMilitaryData(this.token.Usuario[0].cedula, updates)
       .then(async response => {
         await this.getMilitaryData();
-        this.utilservice.AlertMini('top-end', 'success', 'Datos fisonómicos actualizados!', 3000);
+        console.log('Actualización exitosa:', response);
+        this.utilservice.AlertMini('top-end', 'success', 'Datos Actualizados!', 3000);
       })
       .catch(error => {
-        console.error('Error actualizando datos fisonómicos:', error);
-        this.utilservice.AlertMini('top-end', 'error', 'Error al actualizar datos', 3000);
+        console.error('Error en actualización:', error);
+        this.utilservice.AlertMini('top-end', 'error', 'Oops! Lo sentimos, ocurrio un error', 3000);
       });
   }
-}
+
+
+  openModal(modal, row) {
+    this.title_modal = !row ? 'Ingresar Alergias' : 'Actualizar Alergias';
+    if (row) {
+      this.alergiasForm.patchValue({
+        nombre: row.nombre,
+        descripcion: row.descripcion
+      });
+    }
+    this.showAddButton = true;
+    this.modalService.open(modal, {
+      centered: true,
+      size: 'lg',
+      backdrop: false,
+      keyboard: false,
+      windowClass: 'fondo-modal',
+    });
+  }
+
+  openModalEnfermedades(modal, row) {
+    this.title_modal = !row ? 'Ingresar Enfermedades' : 'Actualizar Enfermedades';
+    if (row) {
+      this.enfermedadesForm.patchValue({
+        nombre: row.nombre,
+        descripcion: row.descripcion
+      });
+    }
+    this.showAddButton = true;
+    this.modalService.open(modal, {
+      centered: true,
+      size: 'lg',
+      backdrop: false,
+      keyboard: false,
+      windowClass: 'fondo-modal',
+    });
+  }
+
+  openModalTratamiento(modal, row) {
+    this.title_modal = !row ? 'Ingresar Tratamientos' : 'Actualizar Tratamientos';
+    if (row) {
+      this.tratamientoForm.patchValue({
+        nombre: row.nombre,
+        descripcion: row.descripcion
+      });
+    }
+    this.showAddButton = true;
+    this.modalService.open(modal, {
+      centered: true,
+      size: 'lg',
+      backdrop: false,
+      keyboard: false,
+      windowClass: 'fondo-modal',
+    });
+  }
+
 
 
   // Métodos existentes (sin cambios)

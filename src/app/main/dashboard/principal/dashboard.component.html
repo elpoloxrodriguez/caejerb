@@ -12,12 +12,12 @@
 
           <div class="card-body">
             <div class="d-flex justify-content-center">
-               <div class="w-100" style="max-width: 100%; overflow-x: auto;">
-                 <ul ngbNav #navWithIcons="ngbNav" class="nav-tabs" [ngClass]="{'flex-nowrap': true}">
+              <div class="w-100" style="max-width: 100%; overflow-x: auto;">
+                <ul ngbNav #navWithIcons="ngbNav" class="nav-tabs" [ngClass]="{'flex-nowrap': true}">
                   <li ngbNavItem class="mx-1">
                     <a ngbNavLink>
-                      <span [data-feather]="'mail'"></span> 
-                       <span class="d-none d-md-inline"> Correo</span>   
+                      <span [data-feather]="'mail'"></span>
+                      <span class="d-none d-md-inline"> Correo</span>
                     </a>
                     <ng-template ngbNavContent>
 
@@ -80,8 +80,8 @@
                     </ng-template>
                   </li>
                   <li ngbNavItem class="mx-1">
-                    <a ngbNavLink><span [data-feather]="'phone'"></span> 
-                     <span class="d-none d-md-inline"> Telefono</span> 
+                    <a ngbNavLink><span [data-feather]="'phone'"></span>
+                      <span class="d-none d-md-inline"> Telefono</span>
                     </a>
                     <ng-template ngbNavContent>
                       <form [formGroup]="telefonoForm" (ngSubmit)="updateMilitaryPhone()" class="py-3">
@@ -147,8 +147,8 @@
                     </ng-template>
                   </li>
                   <li ngbNavItem class="mx-1">
-                    <a ngbNavLink><span [data-feather]="'eye'"></span> 
-                       <span class="d-none d-md-inline">Datos Fisonómico</span> 
+                    <a ngbNavLink><span [data-feather]="'eye'"></span>
+                      <span class="d-none d-md-inline">Datos Fisonómico</span>
                     </a>
                     <ng-template ngbNavContent>
                       <form [formGroup]="fisionomiaForm" (ngSubmit)="actualizarDatosFisionomicos()" class="py-3">
@@ -212,24 +212,75 @@
                     </ng-template>
                   </li>
                   <li ngbNavItem class="mx-1">
-                    <a ngbNavLink><span [data-feather]="'user'"></span> 
-                      <span class="d-none d-md-inline">Datos Personales</span> 
+                    <a ngbNavLink><span [data-feather]="'user'"></span>
+                      <span class="d-none d-md-inline">Datos Personales</span>
                     </a>
                     <ng-template ngbNavContent>
+
+                      <form [formGroup]="datoPersonalesForm" (ngSubmit)="actualizarDatosPersonales()" class="py-3">
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="unidadsuperior" class="form-label">Unidad Superior</label>
+                            <input type="text" class="form-control" id="unidadsuperior" formControlName="unidadsuperior"
+                              placeholder="Ingrese unidad superior">
+                            <div
+                              *ngIf="datoPersonalesForm.get('unidadsuperior')?.invalid && 
+                   (datoPersonalesForm.get('unidadsuperior')?.dirty || datoPersonalesForm.get('unidadsuperior')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="datoPersonalesForm.get('unidadsuperior')?.errors?.['required']">
+                                La unidad superior es obligatorio
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="unidadorigen" class="form-label">Unidad Origen</label>
+                            <input type="text" class="form-control" id="unidadorigen" formControlName="unidadorigen"
+                              placeholder="Ingrese unidad de origen">
+                            <div *ngIf="datoPersonalesForm.get('unidadorigen')?.invalid && 
+                   (datoPersonalesForm.get('unidadorigen')?.dirty || datoPersonalesForm.get('unidadorigen')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="datoPersonalesForm.get('unidadorigen')?.errors?.['required']">
+                                La unidad origen es obligatorio
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <div class="col-md-12">
+                            <label for="religion" class="form-label">Religión</label>
+                            <input type="email" class="form-control" id="religion" formControlName="religion"
+                              placeholder="Ingrese religión">
+                            <div *ngIf="datoPersonalesForm.get('religion')?.invalid && 
+                   (datoPersonalesForm.get('religion')?.dirty || datoPersonalesForm.get('religion')?.touched)"
+                              class="text-danger mt-1">
+                              <small *ngIf="datoPersonalesForm.get('religion')?.errors?.['required']">
+                                La religión es obligatorio
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary" [disabled]="datoPersonalesForm.invalid">
+                            <i class="fa fa-save me-1"></i> Actualizar
+                          </button>
+                        </div>
+                      </form>
 
                     </ng-template>
                   </li>
                   <!-- Tab Alergias -->
                   <li ngbNavItem class="mx-1">
-                    <a ngbNavLink><span [data-feather]="'alert-triangle'"></span> 
-                       <span class="d-none d-md-inline">Alergias</span> 
+                    <a ngbNavLink><span [data-feather]="'alert-triangle'"></span>
+                      <span class="d-none d-md-inline">Alergias</span>
                     </a>
                     <ng-template ngbNavContent>
                       <div class="py-3">
                         <div class="d-flex justify-content-between mb-3">
                           <h5>Registro de Alergias</h5>
-                          <button class="btn btn-primary btn-sm" (click)="abrirModalAlergia()">
-                            <i class="fas fa-plus me-1"></i> Agregar
+                          <button class="btn btn-primary btn-sm" (click)="openModal(modal)">
+                            <i class="fa fa-plus me-1"></i> Agregar
                           </button>
                         </div>
 
@@ -239,35 +290,34 @@
                               <tr>
                                 <th>Nombre</th>
                                 <th>Descripción</th>
-                                <th>Tipo</th>
-                                <th>Gravedad</th>
                                 <th>Acciones</th>
                               </tr>
                             </thead>
                             <tbody>
+                              <tr *ngIf="loading">
+                                <td colspan="3" class="text-center">Cargando alergias...</td>
+                              </tr>
                               <tr *ngFor="let alergia of alergias">
                                 <td>{{ alergia.nombre }}</td>
                                 <td>{{ alergia.descripcion }}</td>
-                                <td>{{ alergia.tipo }}</td>
                                 <td>
-                                  <span class="badge" [ngClass]="{
-                  'bg-success': alergia.gravedad === 'LEVE',
-                  'bg-warning': alergia.gravedad === 'MODERADA',
-                  'bg-danger': alergia.gravedad === 'GRAVE'
-                }">
-                                    {{ alergia.gravedad }}
-                                  </span>
-                                </td>
-                                <td>
-                                  <button class="btn btn-sm btn-icon" (click)="editarAlergia(alergia)">
-                                    <i class="fas fa-edit"></i>
+                                  <button class="btn btn-sm btn-icon">
+                                    <i class="fa fa-edit"></i>
                                   </button>
-                                  <button class="btn btn-sm btn-icon text-danger" (click)="eliminarAlergia(alergia.id)">
-                                    <i class="fas fa-trash"></i>
+                                  <button class="btn btn-sm btn-icon text-danger">
+                                    <i class="fa fa-trash"></i>
                                   </button>
                                 </td>
                               </tr>
+                              <tr *ngIf="!loading && alergias.length === 0">
+                                <td colspan="3" class="text-center">No se encontraron alergias</td>
+                              </tr>
                             </tbody>
+
+                            <div class="d-flex justify-content-between mt-3">
+                              <div>Mostrando {{alergias.length}} registros</div>
+                            </div>
+
                           </table>
                         </div>
                       </div>
@@ -276,43 +326,51 @@
                   <!-- Tab Enfermedades -->
                   <li ngbNavItem class="mx-1">
                     <a ngbNavLink><span [data-feather]="'heart'"></span>
-                                           <span class="d-none d-md-inline">Enfermedades</span> 
+                      <span class="d-none d-md-inline">Enfermedades</span>
                     </a>
                     <ng-template ngbNavContent>
                       <div class="py-3">
                         <div class="d-flex justify-content-between mb-3">
                           <h5>Registro de Enfermedades</h5>
-                          <button class="btn btn-primary btn-sm" (click)="abrirModalEnfermedad()">
-                            <i class="fas fa-plus me-1"></i> Agregar
+                          <button class="btn btn-primary btn-sm" (click)="openModalEnfermedades(modalEnfermedades)">
+                            <i class="fa fa-plus me-1"></i> Agregar
                           </button>
                         </div>
 
                         <div class="table-responsive">
-                          <table datatable [dtOptions]="dtOptionsEnfermedades" class="table table-hover">
+                          <table datatable [dtOptions]="dtOptionsAlergias" class="table table-hover">
                             <thead>
                               <tr>
                                 <th>Nombre</th>
                                 <th>Descripción</th>
-                                <th>Fecha Diagnóstico</th>
                                 <th>Acciones</th>
                               </tr>
                             </thead>
                             <tbody>
+                              <tr *ngIf="loadingE">
+                                <td colspan="3" class="text-center">Cargando Enfermedades...</td>
+                              </tr>
                               <tr *ngFor="let enfermedad of enfermedades">
                                 <td>{{ enfermedad.nombre }}</td>
                                 <td>{{ enfermedad.descripcion }}</td>
-                                <td>{{ enfermedad.fechaDiagnostico | date:'dd/MM/yyyy' }}</td>
                                 <td>
-                                  <button class="btn btn-sm btn-icon" (click)="editarEnfermedad(enfermedad)">
-                                    <i class="fas fa-edit"></i>
+                                  <button class="btn btn-sm btn-icon">
+                                    <i class="fa fa-edit"></i>
                                   </button>
-                                  <button class="btn btn-sm btn-icon text-danger"
-                                    (click)="eliminarEnfermedad(enfermedad.id)">
-                                    <i class="fas fa-trash"></i>
+                                  <button class="btn btn-sm btn-icon text-danger">
+                                    <i class="fa fa-trash"></i>
                                   </button>
                                 </td>
                               </tr>
+                              <tr *ngIf="!loadingE && enfermedades.length === 0">
+                                <td colspan="3" class="text-center">No se encontraron Enfermedades</td>
+                              </tr>
                             </tbody>
+
+                            <div class="d-flex justify-content-between mt-3">
+                              <div>Mostrando {{enfermedades.length}} registros</div>
+                            </div>
+
                           </table>
                         </div>
                       </div>
@@ -322,45 +380,51 @@
                   <!-- Tab Tratamientos Médicos -->
                   <li ngbNavItem class="mx-1">
                     <a ngbNavLink><span [data-feather]="'activity'"></span>
-                                           <span class="d-none d-md-inline">Tramamientos Medicos</span> 
-</a>
+                      <span class="d-none d-md-inline">Tramamientos Medicos</span>
+                    </a>
                     <ng-template ngbNavContent>
                       <div class="py-3">
                         <div class="d-flex justify-content-between mb-3">
-                          <h5>Registro de Tratamientos</h5>
-                          <button class="btn btn-primary btn-sm" (click)="abrirModalTratamiento()">
-                            <i class="fas fa-plus me-1"></i> Agregar
+                          <h5>Registro de Enfermedades</h5>
+                          <button class="btn btn-primary btn-sm" (click)="openModalTratamiento(modalTratamiento)">
+                            <i class="fa fa-plus me-1"></i> Agregar
                           </button>
                         </div>
 
                         <div class="table-responsive">
-                          <table datatable [dtOptions]="dtOptionsTratamientos" class="table table-hover">
+                          <table datatable [dtOptions]="dtOptionsAlergias" class="table table-hover">
                             <thead>
                               <tr>
                                 <th>Nombre</th>
                                 <th>Descripción</th>
-                                <th>Fecha Inicio</th>
-                                <th>Fecha Fin</th>
                                 <th>Acciones</th>
                               </tr>
                             </thead>
                             <tbody>
+                              <tr *ngIf="loadingT">
+                                <td colspan="3" class="text-center">Cargando Enfermedades...</td>
+                              </tr>
                               <tr *ngFor="let tratamiento of tratamientos">
                                 <td>{{ tratamiento.nombre }}</td>
                                 <td>{{ tratamiento.descripcion }}</td>
-                                <td>{{ tratamiento.fechaInicio | date:'dd/MM/yyyy' }}</td>
-                                <td>{{ tratamiento.fechaFin | date:'dd/MM/yyyy' }}</td>
                                 <td>
-                                  <button class="btn btn-sm btn-icon" (click)="editarTratamiento(tratamiento)">
-                                    <i class="fas fa-edit"></i>
+                                  <button class="btn btn-sm btn-icon">
+                                    <i class="fa fa-edit"></i>
                                   </button>
-                                  <button class="btn btn-sm btn-icon text-danger"
-                                    (click)="eliminarTratamiento(tratamiento.id)">
-                                    <i class="fas fa-trash"></i>
+                                  <button class="btn btn-sm btn-icon text-danger">
+                                    <i class="fa fa-trash"></i>
                                   </button>
                                 </td>
                               </tr>
+                              <tr *ngIf="!loadingT && tratamientos.length === 0">
+                                <td colspan="3" class="text-center">No se encontraron Enfermedades</td>
+                              </tr>
                             </tbody>
+
+                            <div class="d-flex justify-content-between mt-3">
+                              <div>Mostrando {{tratamientos.length}} registros</div>
+                            </div>
+
                           </table>
                         </div>
                       </div>
@@ -376,3 +440,156 @@
     </div>
   </div>
 </div>
+
+
+
+
+<ng-template #modal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="myModalLabel160">{{ title_modal }}</h5>
+  </div>
+  <div class="modal-body" tabindex="0" ngbAutofocus>
+    <div class="col-xl-12 col-md-12 col-12">
+      <form [formGroup]="alergiasForm" class="invoice-repeater">
+        <div class="row d-flex align-items-end">
+
+          <div class="col-md-12 col-12">
+            <div class="form-group">
+              <label for="itempmvp">Nombre</label>
+              <input type="text" class="form-control" autocomplete="off" formControlName="nombre"
+                placeholder="Ingrese nombre" />
+              <div *ngIf="alergiasForm.get('nombre')?.invalid && alergiasForm.get('nombre')?.touched"
+                class="text-danger">
+                Este campo es requerido
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-12">
+            <div class="form-group">
+              <label for="itempmvp">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" rows="5"
+                placeholder="Ingrese descripción"></textarea>
+              <div *ngIf="alergiasForm.get('descripcion')?.invalid && alergiasForm.get('descripcion')?.touched"
+                class="text-danger">
+                Este campo es requerido
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="ActualizarAlergias()" *ngIf="!showAddButton" [disabled]="alergiasForm.invalid"
+      rippleEffect class="btn btn-warning mr-1">
+      Actualizar Alergia
+    </button>
+    <button type="submit" (click)="agregarAlergias()" [disabled]="alergiasForm.invalid" rippleEffect
+      class="btn btn-success mr-1">
+      Agregar Alergia
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Accept click')" rippleEffect>
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+
+<ng-template #modalEnfermedades let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="myModalLabel160">{{ title_modal }}</h5>
+  </div>
+  <div class="modal-body" tabindex="0" ngbAutofocus>
+    <div class="col-xl-12 col-md-12 col-12">
+      <form [formGroup]="enfermedadesForm" class="invoice-repeater">
+        <div class="row d-flex align-items-end">
+
+          <div class="col-md-12 col-12">
+            <div class="form-group">
+              <label for="itempmvp">Nombre</label>
+              <input type="text" class="form-control" autocomplete="off" formControlName="nombre"
+                placeholder="Ingrese nombre" />
+              <div *ngIf="enfermedadesForm.get('nombre')?.invalid && enfermedadesForm.get('nombre')?.touched"
+                class="text-danger">
+                Este campo es requerido
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-12">
+            <div class="form-group">
+              <label for="itempmvp">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" rows="5"
+                placeholder="Ingrese descripción"></textarea>
+              <div *ngIf="enfermedadesForm.get('descripcion')?.invalid && enfermedadesForm.get('descripcion')?.touched"
+                class="text-danger">
+                Este campo es requerido
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="agregarEnfermedades()" [disabled]="enfermedadesForm.invalid" rippleEffect
+      class="btn btn-success mr-1">
+      Agregar Enfermedad
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Accept click')" rippleEffect>
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+
+<ng-template #modalTratamiento let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="myModalLabel160">{{ title_modal }}</h5>
+  </div>
+  <div class="modal-body" tabindex="0" ngbAutofocus>
+    <div class="col-xl-12 col-md-12 col-12">
+      <form [formGroup]="tratamientoForm" class="invoice-repeater">
+        <div class="row d-flex align-items-end">
+
+          <div class="col-md-12 col-12">
+            <div class="form-group">
+              <label for="itempmvp">Nombre</label>
+              <input type="text" class="form-control" autocomplete="off" formControlName="nombre"
+                placeholder="Ingrese nombre" />
+              <div *ngIf="tratamientoForm.get('nombre')?.invalid && tratamientoForm.get('nombre')?.touched"
+                class="text-danger">
+                Este campo es requerido
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-12">
+            <div class="form-group">
+              <label for="itempmvp">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" rows="5"
+                placeholder="Ingrese descripción"></textarea>
+              <div *ngIf="tratamientoForm.get('descripcion')?.invalid && tratamientoForm.get('descripcion')?.touched"
+                class="text-danger">
+                Este campo es requerido
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="agregarTratamiento()" [disabled]="tratamientoForm.invalid" rippleEffect
+      class="btn btn-success mr-1">
+      Agregar Tratamiento
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Accept click')" rippleEffect>
+      Cerrar
+    </button>
+  </div>
+</ng-template>
