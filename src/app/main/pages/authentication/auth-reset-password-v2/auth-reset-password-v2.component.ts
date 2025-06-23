@@ -26,16 +26,7 @@ export class AuthResetPasswordV2Component implements OnInit {
   };
 
 
-  public foto = 'assets/images/background/background.jpeg'
-
-  public Qr
-  public TipoVerificacion = [
-    { id: 1, name: 'Certificado' },
-    // { id: 2, name: 'Filatelia' }
-  ]
-  public TipoSeleccion
-  public tipo
-
+  public foto = 'assets/images/fondo.webp'
 
   // Public
   public coreConfig: any;

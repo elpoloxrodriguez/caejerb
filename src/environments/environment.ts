@@ -16,7 +16,7 @@ export const environment = {
     recaptcha: {
     siteKey: '6LdwJNwlAAAAAI8-p7XKKCtfJ51goRFyBBbjaAJL', // LOCALHOST Y SIRPVEN V2
   },
-  buildDateTime: 'Fri Jun 20 2025 14:37:12 GMT-0400 (Venezuela Time)',
+  buildDateTime: 'Mon Jun 23 2025 12:31:12 GMT-0400 (Venezuela Time)',
   devel: '/devel/api/',
   fnx: '/v1/api/fnx',
   coleccion: '/v1/api/ccoleccion',

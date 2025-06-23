@@ -250,8 +250,7 @@ export class AuthLoginV2Component implements OnInit {
     const stoken = jwt_decode(data.token);
     this.sessionTOKEN = stoken;
     sessionStorage.setItem("token", data.token);
-    this._router.navigate(['home'], { replaceUrl: true });
-  } catch (error) {
+    this._router.navigate(['']).then(() => { window.location.reload() });  } catch (error) {
     this.loading = false;
     this._router.navigate(['login']);
     this.utilservice.alertConfirmMini('error', 'Usuario y/o Contraseña Incorrectos, Verifique e Intente Nuevamente');

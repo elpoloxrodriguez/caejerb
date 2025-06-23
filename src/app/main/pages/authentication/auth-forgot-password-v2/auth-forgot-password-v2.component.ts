@@ -27,32 +27,13 @@ export class AuthForgotPasswordV2Component implements OnInit {
     valores: {},
   };
 
-  public foto = 'assets/images/background/background.jpeg'
-
-  public Qr
-  public TipoVerificacion = [
-    { id: 1, name: 'Certificado' },
-    // { id: 2, name: 'Filatelia' }
-  ]
-  public TipoSeleccion
-  public tipo
-
+  public foto = 'assets/images/fondo.webp'
 
   public img
   public appLogoImage
   public appName
 
   public fnx;
-
-  public SelectedTipoRegistro = [
-    { id: '1', name: 'Operador Postal Privado' },
-    { id: '2', name: 'Subcontratista' }
-  ]
-  public SelectedTipoEmpresa = []
-
-  public SelectedTipoAgencia = []
-
-  public SelectedTipologia = []
 
   public tokenPWD
 
@@ -69,11 +50,6 @@ export class AuthForgotPasswordV2Component implements OnInit {
   public btnValidarCorreo = 'Validar Correo Electronico'
   public btnRestablecerCorreo = 'Restablecer Contraseña'
 
-  public inputEmail
-  public inputRif
-  public inputTipoRegistro
-  public inputTipologia
-  public inputTipoAgencia
   // Private
   private _unsubscribeAll: Subject<any>;
 
@@ -206,133 +182,6 @@ export class AuthForgotPasswordV2Component implements OnInit {
       throw error; // Propagar el error
     }
   }
-
-    ValidarSeleccion(event, Qr) {
-      if (Qr !== undefined) {
-        switch (event) {
-          case 1:
-            this.Certificado(Qr)
-            break;
-          case 2:
-            this.Philately(Qr)
-            break;
-  
-          default:
-            break;
-        }
-      } else {
-        Swal.fire({
-          title: 'Oops Lo Sentimos!',
-          text: 'El Campo Codigo QR es obligatorio',
-          icon: 'warning',
-        })
-      }
-    }
-  
-    async Certificado(id: string) {
-      // console.log(id)
-      this.xAPI.funcion = "IPOSTEL_R_Certificados";
-      this.xAPI.parametros = `${id}`
-      this.xAPI.valores = ''
-      await this.apiService.EjecutarDev(this.xAPI).subscribe(
-        (data) => {
-          // console.log(data)
-          if (data.Cuerpo.length != 0) {
-            this.Qr = ''
-            this.TipoSeleccion = undefined
-            // console.log(data.Cuerpo[0])
-            var cert = data.Cuerpo[0]
-            switch (cert.type) {
-              case 1:
-                this.tipo = 'Certificado Unico de Inscripción'
-                break;
-              case 2:
-                this.tipo = 'Autorización Postal'
-                break;
-              default:
-                break;
-            }
-            Swal.fire({
-              html: `
-                        <div class="card card-congratulations">
-                          <div class="card-body text-center">
-                            <div class="avatar avatar-xl bg-primary shadow">
-                            </div>
-                            <div class="text-center">
-                              <h1 class="mb-1 text-white">${cert.nombre_empresa}</h1>
-                              <p class="card-text m-auto w-50">
-                              RIF: ${cert.rif}
-                              </p>
-                              <p class="card-text m-auto w-100">
-                              DIRECCIÓN: ${cert.direccion_empresa}
-                              </p>
-                              <p class="card-text m-auto w-75">
-                              ${cert.correo_electronico}
-                              </p>
-                            </div>
-                            <br>
-                            <p align="left">
-                            ${this.tipo}
-                            </p>
-                            <p align="right">
-                            ${cert.token}
-                            </p>
-                          </div>
-                        </div>
-                  `,
-              footer: `
-                  <div class="auth-footer-btn d-flex justify-content-center">
-                    <p class="text-center mt-2">
-                  <small align="center"><strong>INSTITUTO POSTAL TELEGRÁFICO DE VENEZUELA</strong> <br>  RIF G-20000043-0
-                  <br>
-                  Dirección : Avenida José Ángel Lamas, San Martín, Caracas, edificio Centro Postal Caracas, Distrito Capital
-                  <br>
-                  E-mail: <a href="mailto:tsuarez@ipostel.gob.ve">tsuarez@ipostel.gob.ve</a>
-                  <br>
-                  Telf: <a href="Tel:02124053340">0212-405.33.40</a> / 0412-711.08.00 / fax: 0212-405.33.66
-                  </small>
-                  </p>
-                </div>
-                  `,
-              icon: 'success',
-              width: '900px',
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              showConfirmButton: false,
-              showCloseButton: true,
-            })
-          } else {
-            // this.Qr = ''
-            Swal.fire({
-              title: 'Certificado NO Valido!',
-              text: 'Lo sentimos, este certificado no es generado por nuestro sistema.',
-              icon: 'error',
-            })
-          }
-        },
-        (error) => {
-          //   console.log(error)
-          this.utilservice.alertMessageAutoCloseTimer(5000, '<font color="red">Estimado Usuario</font>', '<strong><h4>En este momento estamos presentando fallas de conexión, intente de nuevo</h4></strong>')
-        }
-      )
-    }
-  
-    async Philately(id: string) {
-      Swal.fire({
-        title: 'Franqueo Postal Previo',
-        text: 'El Codigo del QR es de prueba',
-        icon: 'warning',
-        imageWidth: 400,
-        imageHeight: 200,
-        imageAlt: 'Custom image',
-      })
-      this.Qr = ''
-      this.TipoSeleccion = undefined
-  
-    }
-  
-
 
   /**
    * On destroy

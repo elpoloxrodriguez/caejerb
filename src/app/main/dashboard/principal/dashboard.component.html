@@ -16,6 +16,15 @@
                 <ul ngbNav #navWithIcons="ngbNav" class="nav-tabs" [ngClass]="{'flex-nowrap': true}">
                   <li ngbNavItem class="mx-1">
                     <a ngbNavLink>
+                      <span [data-feather]="'users'"></span>
+                      <span class="d-none d-md-inline"> Mi Cuenta</span>
+                    </a>
+                    <ng-template ngbNavContent>
+
+                    </ng-template>
+                  </li>
+                  <li ngbNavItem class="mx-1">
+                    <a ngbNavLink>
                       <span [data-feather]="'mail'"></span>
                       <span class="d-none d-md-inline"> Correo</span>
                     </a>
