@@ -4,6 +4,12 @@ import { UtilService } from '@core/services/util/util.service';
 import { environment } from 'environments/environment';
 
 
+export interface QRData {
+  cedula: string;
+  hash: string;
+  status: number;
+  fecha: Date;
+}
 
 export interface Correo {
   alternativo: string;

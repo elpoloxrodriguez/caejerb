@@ -81,10 +81,6 @@ export class AuthLoginV2Component implements OnInit {
   // Private
   private _unsubscribeAll: Subject<any>;
 
-  public TipoVerificacion = [
-    { id: 1, name: 'Certificado' },
-    // { id: 2, name: 'Filatelia' }
-  ]
   public TipoSeleccion
 
   public tokenA

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import jwt_decode from 'jwt-decode';
 import { LoginService, Usuario } from './login.service';
 import { UtilService } from '@core/services/util/util.service';
-import { MilitaryData, MilitaryDataUpdate } from './military.service';
+import { MilitaryData, MilitaryDataUpdate, QRData } from './military.service';
 import { environment } from 'environments/environment';
 import { ApiService } from '@core/services/api.service';
 import { ApiService as ApiCoreService } from '@core/services/apicore/api.service';
@@ -16,6 +16,7 @@ export class MilitaryUpdateService {
     funcion: '',
     parametros: ''
   };
+  Swal: any;
 
   constructor(
     private loginService: LoginService,
@@ -43,10 +44,10 @@ export class MilitaryUpdateService {
     try {
       // 1. Validar conexión
       await this.validarConexion();
-      
+
       // 2. Obtener datos actuales del militar
       const currentData = await this.ConsultarMilitar(cedula);
-      
+
       // 3. Fusionar cambios con datos existentes
       const updatedData = this.mergeUpdates(currentData, updates);
       // 4. Enviar actualización
@@ -58,12 +59,12 @@ export class MilitaryUpdateService {
   }
 
 
-  async createMilitaryData(military:any): Promise<any> {
+  async createMilitaryData(military: any): Promise<any> {
     console.log('Creando datos militares para:');
     try {
       // 1. Validar conexión
       await this.validarConexion();
-      
+
       return await this.crearMilitar(military);
     } catch (error) {
       console.error('Error en createMilitaryData:', error);
@@ -79,7 +80,7 @@ export class MilitaryUpdateService {
         nombre: 'loginQR',
         clave: '1234',
       };
-      
+
       await this.loginService.getLoginRecovery(dt).subscribe({
         next: (data) => {
           sessionStorage.setItem("recovery", data.token);
@@ -97,8 +98,8 @@ export class MilitaryUpdateService {
     this.xAPI.funcion = environment.xApi.OBTENERMILITAR;
     this.xAPI.parametros = `${cedula}`;
 
-    return new Promise( (resolve, reject) => {
-       this._apiService.Ejecutar(this.xAPI).subscribe({
+    return new Promise((resolve, reject) => {
+      this._apiService.Ejecutar(this.xAPI).subscribe({
         next: (response: any) => {
           if (!response || !response[0]) {
             reject('La API respondió con null/undefined');
@@ -127,6 +128,25 @@ export class MilitaryUpdateService {
       this._apiService.ExecColeccion(obj).subscribe({
         next: (response) => resolve(response),
         error: (e) => reject(e),
+      });
+    });
+  }
+
+
+  // funcion para agregar tarjeta de identificacion
+  public async crearTIMMilitar(Militar: QRData): Promise<any> {
+    await this.validarConexion()
+    return new Promise((resolve, reject) => {
+      let obj = {
+        coleccion: environment.colecciones.LISTATIM,
+        objeto: Militar,
+        donde: `{\"fecha\":\"${Militar.fecha}\"}`,
+        driver: environment.driver.PIMQR,
+        upsert: true,
+      };
+      this._apiService.ExecColeccion(obj).subscribe({
+        next: (response) => resolve(response),
+        error: (e) => reject(e)
       });
     });
   }
@@ -162,42 +182,42 @@ export class MilitaryUpdateService {
 
     if (updates.persona) {
       if (!mergedData.persona) mergedData.persona = {} as any;
-      
+
       if (updates.persona.correo) {
         mergedData.persona.correo = { ...mergedData.persona.correo, ...updates.persona.correo };
       }
-      
+
       if (updates.persona.datobasico) {
         mergedData.persona.datobasico = { ...mergedData.persona.datobasico, ...updates.persona.datobasico };
       }
-      
+
       if (updates.persona.datofisico) {
         mergedData.persona.datofisico = { ...mergedData.persona.datofisico, ...updates.persona.datofisico };
       }
-      
+
       if (updates.persona.datofisionomico) {
         mergedData.persona.datofisionomico = { ...mergedData.persona.datofisionomico, ...updates.persona.datofisionomico };
       }
-      
+
       if (updates.persona.telefono) {
         mergedData.persona.telefono = { ...mergedData.persona.telefono, ...updates.persona.telefono };
       }
-      
+
       if (updates.persona.religion !== undefined) {
         mergedData.persona.religion = updates.persona.religion;
       }
-      
+
       if (updates.persona.salud) {
         if (!mergedData.persona.salud) mergedData.persona.salud = { alergias: [], enfermedades: [], tratamientos: [] };
-        
+
         if (updates.persona.salud.alergias) {
           mergedData.persona.salud.alergias = [...(mergedData.persona.salud.alergias || []), ...updates.persona.salud.alergias];
         }
-        
+
         if (updates.persona.salud.enfermedades) {
           mergedData.persona.salud.enfermedades = [...(mergedData.persona.salud.enfermedades || []), ...updates.persona.salud.enfermedades];
         }
-        
+
         if (updates.persona.salud.tratamientos) {
           mergedData.persona.salud.tratamientos = [...(mergedData.persona.salud.tratamientos || []), ...updates.persona.salud.tratamientos];
         }

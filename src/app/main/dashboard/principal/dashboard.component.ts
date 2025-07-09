@@ -3,12 +3,16 @@ import { IAPICore, ApiService } from '@core/services/apicore/api.service';
 import jwt_decode from "jwt-decode";
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { environment } from 'environments/environment';
-import { MilitaryData, MilitaryDataUpdate } from 'app/main/services/military.service';
+import { MilitaryData, MilitaryDataUpdate, QRData } from 'app/main/services/military.service';
 import { MilitaryUpdateService } from 'app/main/services/military-update-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UtilService } from '@core/services/util/util.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Alergia, Enfermedad, Tratamiento } from 'app/main/services/militar.model';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
+import Swal from 'sweetalert2';
+
+
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +20,7 @@ import { Alergia, Enfermedad, Tratamiento } from 'app/main/services/militar.mode
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild(DatatableComponent) table: DatatableComponent;
   @BlockUI() blockUI: NgBlockUI;
   @BlockUI('section-block') sectionBlockUI: NgBlockUI;
 
@@ -25,11 +30,28 @@ export class DashboardComponent implements OnInit {
     valores: {},
   };
 
+
+  public ListaQRMilitar = []
+  public tempData = [];
+  public rowData = [];
+
+  public selected = [];
+  public basicSelectedOption: number = 10;
+  public ColumnMode = ColumnMode;
+  public SelectionType = SelectionType;
+
   public title_modal: string;
 
   public alergias: Alergia[] = [];
   public enfermedades: Enfermedad[] = [];
   public tratamientos: Tratamiento[] = [];
+
+  public listadoQR: QRData = {
+    cedula: '',
+    hash: '',
+    status: 0,
+    fecha: new Date()
+  };
 
   public correoForm: FormGroup;
   public telefonoForm: FormGroup;
@@ -69,7 +91,15 @@ export class DashboardComponent implements OnInit {
     const tokenString = sessionStorage.getItem('token');
     if (tokenString) {
       this.token = jwt_decode(tokenString);
+      await this.listQr(this.token.Usuario[0].cedula)
     }
+
+    // para agregar nuevo TIM
+    this.listadoQR.cedula = this.token.Usuario[0].cedula
+    this.listadoQR.hash = this.token.Usuario[0].hash
+    this.listadoQR.status = 0
+    this.listadoQR.fecha = new Date();
+
 
     this.correoForm = this.fb.group({
       emailPrincipal: ['', [Validators.required, Validators.email]],
@@ -103,8 +133,6 @@ export class DashboardComponent implements OnInit {
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required]
     });
-    
-
 
 
     this.fisionomiaForm = this.fb.group({
@@ -129,6 +157,56 @@ export class DashboardComponent implements OnInit {
       value = value.replace(/(\d{4})(\d{3})(\d{4})/, '($1)-$2-$3');
       field?.setValue(value, { emitEvent: false });
     }
+  }
+
+
+  async listQr(cedula: any) {
+    this.xAPI.funcion = environment.xApi.PIM_R_OBTENERLISTAQR;
+    this.xAPI.parametros = `${cedula}`
+    this.ListaQRMilitar = []
+    await this._apiService.Ejecutar(this.xAPI).subscribe(
+      (data) => {
+        this.rowData = data;
+        this.tempData = this.rowData;
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
+  }
+
+  ModalAddLista() {
+    Swal.fire({
+      title: "¿Está seguro que desea generar una nueva tarjeta de identificación?",
+      text: "Esta acción creará una nueva credencial oficial con los datos actuales del usuario. Por favor verifique que la información esté correcta antes de continuar.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, generar tarjeta",
+      cancelButtonText: "Cancelar"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.militaryUpdateService.crearTIMMilitar(this.listadoQR)
+          .then(async (data) => {
+            this.ListaQRMilitar = []
+            await this.listQr(this.token.Usuario[0].cedula)
+            Swal.fire({
+              title: "¡Tarjeta generada!",
+              text: "La nueva tarjeta de identificación ha sido creada exitosamente.",
+              icon: "success"
+            });
+          })
+          .catch((error) => {
+            // console.error(error);
+            Swal.fire({
+              title: "¡Ooops Lo Sentimos!",
+              text: "Debe primero actualziar su información personal!",
+              icon: "error"
+            });
+          });
+      }
+    });
   }
 
 
@@ -183,6 +261,18 @@ export class DashboardComponent implements OnInit {
 
   }
 
+
+  filterUpdate(event: any) {
+    const val = event.target.value;
+    // filter our data
+    const temp = this.tempData.filter(function (d) {
+      return d.fecha.indexOf(val) !== -1 || !val;
+    });
+    // update the rows
+    this.rowData = temp;
+    // Whenever the filter changes, always go back to the first page
+    this.table.offset = 0;
+  }
 
   agregarAlergias() {
     const add = {
@@ -431,6 +521,9 @@ export class DashboardComponent implements OnInit {
       windowClass: 'fondo-modal',
     });
   }
+
+
+
 
 
 

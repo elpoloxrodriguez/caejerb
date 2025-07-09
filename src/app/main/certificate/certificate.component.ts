@@ -86,7 +86,8 @@ export class CertificateComponent implements OnInit {
     religion: '',
     grupoSanguineo: '',
     salud: undefined,
-    escudo: ''
+    escudo: '',
+    grado_img: ''
   }
 
   constructor(
@@ -533,7 +534,8 @@ export class CertificateComponent implements OnInit {
             religion: this.rowMilitar.persona.religion,
             grupoSanguineo: this.rowMilitar.persona.datofisionomico.gruposanguineo,
             salud: this.rowMilitar.persona.salud,
-            escudo: ''
+            escudo: '',
+            grado_img: `./assets/images/grados/${this.rowMilitar.grado.abreviatura.toLowerCase()}.webp`
           };
           switch (this.rowMilitar.componente.abreviatura) {
             case 'EJ':
@@ -556,7 +558,7 @@ export class CertificateComponent implements OnInit {
               break;
           }
 
-            if (cedula == '5892464') {
+          if (cedula == '5892464') {
             this.militar.foto = './assets/images/presidente.jpg';
             this.militar.componente = 'Comandante en Jefe de la Fuerza Armada Nacional Bolivariana';
             this.escudo = './assets/images/fanb.png';

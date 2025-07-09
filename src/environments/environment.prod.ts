@@ -13,7 +13,7 @@ export const environment = {
     recaptcha: {
     siteKey: '6LdwJNwlAAAAAI8-p7XKKCtfJ51goRFyBBbjaAJL', // LOCALHOST Y SIRPVEN V2
   },
-  buildDateTime: 'Mon Jun 23 2025 12:31:12 GMT-0400 (Venezuela Time)',
+  buildDateTime: 'Wed Jul 09 2025 10:31:11 GMT-0400 (Venezuela Time)',
   devel: '/devel/api/',
   fnx: '/v1/api/fnx',
   coleccion: '/v1/api/ccoleccion',
@@ -35,6 +35,7 @@ export const environment = {
   colecciones: {
     WUSUARIO : 'wusuario',
     MILITAR: 'militar',
+    LISTATIM: 'listado-qr',
     ANALITICOS: 'analiticos'
 
   },
@@ -45,7 +46,7 @@ export const environment = {
     INICIOSESION_ADMIN: 'PIM_PG_R_INICIOSESION_ADMIN',
     OBTENERMILITAR: 'PIM_R_OBTENERMILITAR',
     CONSULTARHASH: 'PIM_R_CONSULTARHASH',
-
+    PIM_R_OBTENERLISTAQR: 'PIM_R_OBTENERLISTAQR',
 
 
     PHONE: {
