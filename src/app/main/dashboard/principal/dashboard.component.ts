@@ -85,6 +85,7 @@ export class DashboardComponent implements OnInit {
     private fb: FormBuilder,
     private utilservice: UtilService,
     private modalService: NgbModal,
+    private medicalDataService: MilitaryUpdateService 
   ) { }
 
   async ngOnInit() {
@@ -274,7 +275,7 @@ export class DashboardComponent implements OnInit {
     this.table.offset = 0;
   }
 
-  agregarAlergias() {
+  XagregarAlergias() {
     const add = {
       cedula: this.token.Usuario[0].cedula,
       persona: {
@@ -302,6 +303,178 @@ export class DashboardComponent implements OnInit {
         this.utilservice.AlertMini('top-end', 'error', 'Oops! Lo sentimos, ocurrio un error', 3000);
       });
   }
+
+  async agregarAlergias() {
+  try {
+    // Crear nueva alergia
+    const nuevaAlergia = {
+      nombre: this.alergiasForm.get('nombre').value,
+      descripcion: this.alergiasForm.get('descripcion').value || '' // Asegurar descripción
+    };
+
+    // Crear array actualizado (añadiendo la nueva alergia)
+    const alergiasActualizadas = [...this.alergias, nuevaAlergia]
+      .map(alergia => ({
+        nombre: alergia.nombre,
+        descripcion: alergia.descripcion ?? ''
+      }));
+
+    // Preparar payload
+    const updateData = {
+      cedula: this.token.Usuario[0].cedula,
+      persona: {
+        salud: {
+          alergias: alergiasActualizadas,
+          // Mantener otros arrays sin cambios
+          enfermedades: undefined,
+          tratamientos: undefined
+        }
+      }
+    };
+
+    // Enviar actualización
+    await this.militaryUpdateService.updateMilitaryData(
+      this.token.Usuario[0].cedula,
+      updateData
+    );
+
+    // Actualizar vista
+    await this.getMilitaryData();
+    this.modalService.dismissAll();
+    this.alergiasForm.reset();
+    
+    this.utilservice.AlertMini('top-end', 'success', 'Alergia agregada correctamente!', 3000);
+  } catch (error) {
+    console.error('Error al agregar alergia:', error);
+    this.utilservice.AlertMini('top-end', 'error', 'Error al agregar alergia', 3000);
+  }
+}
+
+ // Función genérica para eliminar
+  async deleteMedicalItem(
+    index: number,
+    entityType: 'alergias' | 'enfermedades' | 'tratamientos',
+    currentItems: any[],
+    confirmationMessage: string
+  ) {
+    const result = await Swal.fire({
+      title: `¿Estás seguro de eliminar este ${entityType.slice(0, -1)}?`,
+      text: confirmationMessage,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar!",
+      cancelButtonText: "Cancelar"
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const updatedItems = currentItems
+        .filter((_, i) => i !== index)
+        .map(item => this.ensureRequiredFields(item, entityType));
+
+      await this.medicalDataService.updateMedicalData(
+        this.token.Usuario[0].cedula,
+        entityType,
+        updatedItems
+      );
+
+      await this.getMilitaryData();
+      this.utilservice.AlertMini('top-end', 'success', `${this.capitalize(entityType.slice(0, -1))} eliminada!`, 3000);
+    } catch (error) {
+      console.error(`Error al eliminar ${entityType}:`, error);
+      this.utilservice.AlertMini('top-end', 'error', `Error al eliminar ${entityType.slice(0, -1)}`, 3000);
+    }
+  }
+
+  // Función genérica para agregar
+  async addMedicalItem(
+    form: FormGroup,
+    entityType: 'alergias' | 'enfermedades' | 'tratamientos',
+    currentItems: any[]
+  ) {
+    if (form.invalid) {
+      this.utilservice.AlertMini('top-end', 'warning', 'Complete todos los campos requeridos', 3000);
+      return;
+    }
+
+    const newItem = this.createMedicalItem(form, entityType);
+    
+    if (this.checkDuplicate(currentItems, newItem, entityType)) {
+      this.utilservice.AlertMini('top-end', 'warning', `Este ${entityType.slice(0, -1)} ya existe`, 3000);
+      return;
+    }
+
+    try {
+      await this.medicalDataService.updateMedicalData(
+        this.token.Usuario[0].cedula,
+        entityType,
+        [...currentItems, newItem]
+      );
+
+      await this.getMilitaryData();
+      form.reset();
+      this.modalService.dismissAll();
+      this.utilservice.AlertMini('top-end', 'success', `${this.capitalize(entityType.slice(0, -1))} agregada!`, 3000);
+    } catch (error) {
+      console.error(`Error al agregar ${entityType}:`, error);
+      this.utilservice.AlertMini('top-end', 'error', `Error al agregar ${entityType.slice(0, -1)}`, 3000);
+    }
+  }
+
+  // Helper methods
+  private ensureRequiredFields(item: any, entityType: string): any {
+    const base = {
+      nombre: item.nombre,
+      descripcion: item.descripcion || ''
+    };
+
+    if (entityType === 'tratamientos') {
+      return {
+        ...base,
+        fechaInicio: item.fechaInicio || new Date().toISOString(),
+        // otros campos específicos de tratamientos
+      };
+    }
+    return base;
+  }
+
+  private createMedicalItem(form: FormGroup, entityType: string): any {
+    const baseItem = {
+      nombre: form.get('nombre').value,
+      descripcion: form.get('descripcion').value || ''
+    };
+
+    if (entityType === 'enfermedades') {
+      return {
+        ...baseItem,
+        cronicidad: form.get('cronicidad')?.value || 'aguda'
+      };
+    }
+
+    if (entityType === 'tratamientos') {
+      return {
+        ...baseItem,
+        fechaInicio: form.get('fechaInicio')?.value || new Date().toISOString(),
+        medicamento: form.get('medicamento')?.value || ''
+      };
+    }
+
+    return baseItem;
+  }
+
+  private checkDuplicate(items: any[], newItem: any, entityType: string): boolean {
+    return items.some(item => 
+      item.nombre.toLowerCase() === newItem.nombre.toLowerCase()
+    );
+  }
+
+  private capitalize(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+  
 
   agregarEnfermedades() {
     const add = {
@@ -523,9 +696,49 @@ export class DashboardComponent implements OnInit {
   }
 
 
+async deleteAlergias(index: number) {
+  const result = await Swal.fire({
+    title: "¿Estás seguro de que deseas eliminar esta alergia?",
+    text: "Ten en cuenta que no podrás revertir los cambios!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sí, eliminar!",
+    cancelButtonText: "Cancelar"
+  });
 
+  if (result.isConfirmed) {
+    try {
+      // Crear array sin el elemento a eliminar
+      const updatedAlergias = this.alergias
+        .filter((_, i) => i !== index)
+        .map(a => ({ nombre: a.nombre, descripcion: a.descripcion || '' }));
 
+      const updatePayload = {
+        cedula: this.token.Usuario[0].cedula,
+        persona: {
+          salud: {
+            alergias: updatedAlergias,
+            enfermedades: undefined,
+            tratamientos: undefined
+          }
+        }
+      };
 
+      await this.militaryUpdateService.updateMilitaryData(
+        this.token.Usuario[0].cedula,
+        updatePayload
+      );
+
+      await this.getMilitaryData();
+      this.utilservice.AlertMini('top-end', 'success', 'Alergia eliminada!', 3000);
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      this.utilservice.AlertMini('top-end', 'error', 'Error al eliminar alergia', 3000);
+    }
+  }
+}
 
   // Métodos existentes (sin cambios)
   async GenerarPIMQR() {

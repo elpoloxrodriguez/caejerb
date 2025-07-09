@@ -17,7 +17,7 @@ import { CoreConfig } from '@core/types';
 export const coreConfig: CoreConfig = {
   app: {
     appName     : 'EJÉRCITO BOLIVARIANO',                                        // App Name
-    appTitle    : 'QR-EJB', // App Title
+    appTitle    : 'PIM-EJB', // App Title
     appLogoImage: 'assets/images/logo.png',                  // App Logo
     appLanguage : 'es',                                           // App Default Language (en, fr, de, pt etc..)
   },

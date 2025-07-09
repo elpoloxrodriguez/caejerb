@@ -18,7 +18,6 @@ import { MiscellaneousModule } from '../pages/miscellaneous/miscellaneous.module
 import { BlockUIModule } from 'ng-block-ui';
 
 import { DashboardComponent } from './principal/dashboard.component';
-import { SharedModule } from '../shared/shared.module';
 
 
 
@@ -41,7 +40,6 @@ import { SharedModule } from '../shared/shared.module';
     FormsModule,
     ReactiveFormsModule,
     MiscellaneousModule,
-    SharedModule
   ],
   exports: [],
   providers: [DatePipe]

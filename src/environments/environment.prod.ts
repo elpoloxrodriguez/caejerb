@@ -13,7 +13,7 @@ export const environment = {
     recaptcha: {
     siteKey: '6LdwJNwlAAAAAI8-p7XKKCtfJ51goRFyBBbjaAJL', // LOCALHOST Y SIRPVEN V2
   },
-  buildDateTime: 'Wed Jul 09 2025 10:31:11 GMT-0400 (Venezuela Time)',
+  buildDateTime: 'Wed Jul 09 2025 12:35:59 GMT-0400 (Venezuela Time)',
   devel: '/devel/api/',
   fnx: '/v1/api/fnx',
   coleccion: '/v1/api/ccoleccion',

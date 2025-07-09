@@ -37,8 +37,8 @@
                                     </select>
                                   </label>
                                   <button type="button" style="height: 38px; margin-top: -4px;"
-                                    (click)="ModalAddLista()" class="btn btn-icon btn-info" rippleEffect>
-                                    <span [data-feather]="'plus'"></span> Agregar</button>
+                                    (click)="ModalAddLista()" class="btn btn-icon btn-warning" rippleEffect>
+                                    <span [data-feather]="'plus'"></span> Generar PIM</button>
                                 </div>
                               </div>
                             </div>
@@ -66,7 +66,7 @@
                             [limit]="basicSelectedOption">
 
 
-                            <ngx-datatable-column name="CEDULA" prop="cedula" [width]="150">
+                            <ngx-datatable-column name="CEDULA" prop="cedula" [width]="100">
                               <ng-template let-cedula="value" ngx-datatable-cell-template>
                                 <div>
                                   <span class="font-weight-bold">{{ cedula }} </span>
@@ -75,7 +75,7 @@
                             </ngx-datatable-column>
 
 
-                            <ngx-datatable-column name="HASH" prop="hash" [width]="150">
+                            <ngx-datatable-column name="HASH" prop="hash" [width]="100">
                               <ng-template let-hash="value" ngx-datatable-cell-template>
                                 <div>
                                   <span class="font-weight-bold">{{ hash.slice(0,10) }}... </span>
@@ -83,7 +83,7 @@
                               </ng-template>
                             </ngx-datatable-column>
 
-                            <ngx-datatable-column name="Status" prop="status" [width]="5">
+                            <ngx-datatable-column name="Status" prop="status" [width]="100">
                               <ng-template let-status="value" ngx-datatable-cell-template>
 
                                 <div class="badge badge-success" *ngIf="status === 1">Impreso</div>
@@ -93,7 +93,7 @@
                             </ngx-datatable-column>
 
 
-                            <ngx-datatable-column name="Fecha" prop="fecha" [width]="5">
+                            <ngx-datatable-column name="Fecha" prop="fecha" [width]="100">
                               <ng-template let-fecha="value" ngx-datatable-cell-template>
                                 <div>
                                   <span class="font-weight-bold">{{ fecha | date:'dd-MM-yyyy H:mm:ss' }} </span>
@@ -390,22 +390,19 @@
                             </thead>
                             <tbody>
                               <tr *ngIf="loading">
-                                <td colspan="3" class="text-center">Cargando alergias...</td>
+                                <td colspan="3" class="text-center">Cargando Alergias...</td>
                               </tr>
-                              <tr *ngFor="let alergia of alergias">
+                              <tr *ngFor="let alergia of alergias; let i = index">
                                 <td>{{ alergia.nombre }}</td>
                                 <td>{{ alergia.descripcion }}</td>
                                 <td>
-                                  <button class="btn btn-sm btn-icon">
-                                    <i class="fa fa-edit"></i>
-                                  </button>
-                                  <button class="btn btn-sm btn-icon text-danger">
+                                  <button (click)="deleteMedicalItem(i, 'alergias', alergias, 'No podrás revertir este cambio')" class="btn btn-sm btn-icon text-danger">
                                     <i class="fa fa-trash"></i>
                                   </button>
                                 </td>
                               </tr>
                               <tr *ngIf="!loading && alergias.length === 0">
-                                <td colspan="3" class="text-center">No se encontraron alergias</td>
+                                <td colspan="3" class="text-center">No se encontraron Alergias</td>
                               </tr>
                             </tbody>
 
@@ -445,14 +442,11 @@
                               <tr *ngIf="loadingE">
                                 <td colspan="3" class="text-center">Cargando Enfermedades...</td>
                               </tr>
-                              <tr *ngFor="let enfermedad of enfermedades">
+                              <tr *ngFor="let enfermedad of enfermedades; let i = index">
                                 <td>{{ enfermedad.nombre }}</td>
                                 <td>{{ enfermedad.descripcion }}</td>
                                 <td>
-                                  <button class="btn btn-sm btn-icon">
-                                    <i class="fa fa-edit"></i>
-                                  </button>
-                                  <button class="btn btn-sm btn-icon text-danger">
+                                  <button (click)="deleteMedicalItem(i, 'enfermedades', enfermedades, 'Esta acción es permanente')" class="btn btn-sm btn-icon text-danger">
                                     <i class="fa fa-trash"></i>
                                   </button>
                                 </td>
@@ -497,22 +491,19 @@
                             </thead>
                             <tbody>
                               <tr *ngIf="loadingT">
-                                <td colspan="3" class="text-center">Cargando Enfermedades...</td>
+                                <td colspan="3" class="text-center">Cargando Tratamientos...</td>
                               </tr>
-                              <tr *ngFor="let tratamiento of tratamientos">
+                              <tr *ngFor="let tratamiento of tratamientos; let i = index">
                                 <td>{{ tratamiento.nombre }}</td>
                                 <td>{{ tratamiento.descripcion }}</td>
                                 <td>
-                                  <button class="btn btn-sm btn-icon">
-                                    <i class="fa fa-edit"></i>
-                                  </button>
-                                  <button class="btn btn-sm btn-icon text-danger">
+                                  <button (click)="deleteMedicalItem(i, 'tratamientos', tratamientos, 'Se eliminará el registro')" class="btn btn-sm btn-icon text-danger">
                                     <i class="fa fa-trash"></i>
                                   </button>
                                 </td>
                               </tr>
                               <tr *ngIf="!loadingT && tratamientos.length === 0">
-                                <td colspan="3" class="text-center">No se encontraron Enfermedades</td>
+                                <td colspan="3" class="text-center">No se encontraron Tratamientos</td>
                               </tr>
                             </tbody>
 

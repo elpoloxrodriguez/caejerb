@@ -268,6 +268,8 @@ export class MilitaryService {
     };
   }
 
+  
+
   private mapMilitaryResponse(response: any): MilitaryData {
     const data = Array.isArray(response) ? response[0] : response;
 

@@ -16,7 +16,6 @@ export class MilitaryUpdateService {
     funcion: '',
     parametros: ''
   };
-  Swal: any;
 
   constructor(
     private loginService: LoginService,
@@ -40,17 +39,61 @@ export class MilitaryUpdateService {
    * @returns Promise con el resultado de la operación
    */
   async updateMilitaryData(cedula: string, updates: MilitaryDataUpdate): Promise<any> {
-    console.log('Actualizando datos militares para:', cedula, 'con cambios:', updates);
+    // console.log('Actualizando datos militares para:', cedula, 'con cambios:', updates);
     try {
-      // 1. Validar conexión
       await this.validarConexion();
-
-      // 2. Obtener datos actuales del militar
       const currentData = await this.ConsultarMilitar(cedula);
 
-      // 3. Fusionar cambios con datos existentes
-      const updatedData = this.mergeUpdates(currentData, updates);
-      // 4. Enviar actualización
+      // Fusión manual asegurando todas las propiedades requeridas
+      const updatedData: MilitaryData = {
+        ...currentData,
+        ...updates,
+        componente: {
+          ...currentData.componente,
+          ...updates.componente,
+          abreviatura: updates.componente?.abreviatura ?? currentData.componente.abreviatura,
+          // Add other required properties here if needed
+        },
+        grado: {
+          ...currentData.grado,
+          ...updates.grado,
+          // Add required properties if any
+        },
+        persona: {
+          ...currentData.persona,
+          ...updates.persona,
+          datobasico: {
+            ...currentData.persona.datobasico,
+            ...updates.persona?.datobasico,
+          },
+          datofisico: {
+            ...currentData.persona.datofisico,
+            ...updates.persona?.datofisico,
+          },
+          datofisionomico: {
+            ...currentData.persona.datofisionomico,
+            ...updates.persona?.datofisionomico,
+          },
+          telefono: {
+            ...currentData.persona.telefono,
+            ...updates.persona?.telefono,
+          },
+          salud: {
+            ...currentData.persona.salud,
+            ...updates.persona?.salud,
+            alergias: updates.persona?.salud?.alergias ?? currentData.persona.salud.alergias,
+            enfermedades: updates.persona?.salud?.enfermedades ?? currentData.persona.salud.enfermedades,
+            tratamientos: updates.persona?.salud?.tratamientos ?? currentData.persona.salud.tratamientos
+          },
+          correo: {
+            ...currentData.persona.correo,
+            ...updates.persona?.correo,
+            alternativo: updates.persona?.correo?.alternativo ?? currentData.persona.correo.alternativo
+          },
+          religion: updates.persona?.religion ?? currentData.persona.religion
+        }
+      };
+
       return this.crearMilitar(updatedData);
     } catch (error) {
       console.error('Error en updateMilitaryData:', error);
@@ -114,6 +157,31 @@ export class MilitaryUpdateService {
       });
     });
   }
+
+
+  async updateMedicalData(
+    cedula: string,
+    entityType: 'alergias' | 'enfermedades' | 'tratamientos',
+    entities: any[],
+    otherEntities: {
+      enfermedades?: any[],
+      tratamientos?: any[],
+      alergias?: any[]
+    } = {}
+  ): Promise<void> {
+    const updatePayload = {
+      cedula,
+      persona: {
+        salud: {
+          [entityType]: entities,
+          ...otherEntities
+        }
+      }
+    };
+
+    await this.updateMilitaryData(cedula, updatePayload);
+  }
+
 
   private crearMilitar(Militar: MilitaryData): Promise<any> {
     return new Promise((resolve, reject) => {
